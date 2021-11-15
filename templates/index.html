@@ -1,0 +1,42 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Secret Santa</title>
+  <meta name="description" content="Make your Secret Santa pairings!">
+  <link rel="stylesheet" href="static/css/styles.css">
+</head>
+
+<body>
+	<div class="container">
+    <div class="top">
+      <div>Secret Santa</div>
+    </div>
+    
+    <div class="form-container">
+      <form action="result" method="post">
+        <input type="text" name="ss-title" placeholder="Title" required>
+        <div>  
+          <div id="members"> 
+            <div>
+              <input type="text" placeholder="Name" name="name" required>
+              <input type="email" placeholder="Email" name="email" required>
+            </div>
+            <div>
+              <input type="text" placeholder="Name" name="name" required>
+              <input type="email" placeholder="Email" name="email" required>
+            </div>
+          </div>
+          <div class="plus"><img src="../static/images/plus.png" alt="Add" title="Add New Member"></div>
+          <button type="submit">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../static/scripts/app.js"></script>
+</body>
+</html>
