@@ -28,4 +28,4 @@ def result():
 		pp.pprint(pairs)
 		return render_template('result.html', pairs = pairs, title = request.form['ss-title'])
 	else:
-		return "Odd number of members!"
+		return "Odd number of members! Were you really going to leave someone without a mate?"

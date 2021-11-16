@@ -19,6 +19,15 @@ button[type=submit] {
 	width: 150px;
 	height: 50px;
 	font-size: 20px;
+	cursor: pointer;
+}
+
+img {
+	filter:opacity(0.55);
+}
+
+img:hover {
+	filter: opacity(0.9);
 }
 
 .top {
@@ -62,12 +71,31 @@ button[type=submit] {
 	margin-top: 20px;
 }
 
-#members>* {
-	margin-top: 20px;
+#members {
+	display: inline-grid;
+}
+
+#members>div {
+	display: inline-flex;
+	padding: 10px;
+}
+
+#members>div>* {
+	margin: auto 5px;
+}
+
+.delete-icon {
+    width: fit-content;
+    height: fit-content;
+    margin: auto;
+	cursor: pointer;
+}
+
+.delete-icon>img {
+	width: 30px;
 }
 
 .plus {
-	filter: opacity(0.5);
     cursor: pointer;
     width: fit-content;
     padding: 10px;
