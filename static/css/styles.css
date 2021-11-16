@@ -41,7 +41,7 @@ button[type=submit] {
     font-size: 30px;
 }
 
-.container {
+.main {
 	position: absolute;
 	left: 0;
 	right: 0;
@@ -77,4 +77,22 @@ button[type=submit] {
 
 .plus>img {
 	width: 35px;
+}
+
+.results > .col {
+	border: 1px solid silver;
+	padding: 20px;
+}
+
+.results > .col > div {
+	padding: 10px;
+}
+
+.results > .col > div > img {
+	width: 100px;
+	margin-bottom: 10px;
+}
+
+.results > .col > div > p {
+	margin-bottom: 0;
 }

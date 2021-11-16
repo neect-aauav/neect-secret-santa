@@ -20,15 +20,3 @@ document.getElementsByClassName("plus")[0].addEventListener("click", () => {
 		email.required = true;
 	}
 });
-
-Array.from(document.getElementsByTagName("button"))
-	.filter(btn => btn.type == "submit")[0]
-	.addEventListener("click", () => {
-		// POST number of members
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", send, true);
-		xhr.setRequestHeader('Content-Type', 'application/json');
-		xhr.send(JSON.stringify({
-			members: 5
-		}));
-	});
