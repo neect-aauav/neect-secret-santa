@@ -14,7 +14,7 @@
 <body>
 	<div class="main">
     <div class="top">
-      <div>Secret Santa</div>
+      <div><a href="/">Secret Santa</a></div>
     </div>
     
     <div class="form-container">
@@ -28,7 +28,7 @@
             <div class="col">
               {% for member in pair %}
                 <div>
-                  <img src="../static/images/user.png" alt="user">
+                  <img src="../static/images/gift.png" alt="user">
                   <p style="font-size: 30px;">{{member[0]}}</p>
                   <p style="font-size: 15px; color: #959595;">{{member[1]}}</p>
                 </div>
@@ -40,6 +40,6 @@
     </div>
   </div>
 
-  <script src="../static/scripts/app.js"></script>
+  <script src="../static/scripts/script.js"></script>
 </body>
 </html>

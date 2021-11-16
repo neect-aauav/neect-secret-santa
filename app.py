@@ -12,9 +12,15 @@ app = Flask(__name__)
 # into a Flask view function
 @app.route('/')
 def index():
-	return render_template('index.html')
+	members = 2
+	title = ''
+	if request.method == 'GET':
+		print(request.args)
+		members = request.args.get('members') if request.args.get('members') and int(request.args.get('members')) > 2 else 2
+		title = request.args.get('title') if request.args.get('title') else ''
+	return render_template('index.html', members = members, title=title)
 
-@app.route('/result', methods=['POST'])
+@app.route('/result', methods=["POST"])
 def result():
 	# [(name1, email1), (name2, email2), ...]
 	members = [(name, email) for name, email in zip(request.form.getlist('name'), request.form.getlist('email'))]

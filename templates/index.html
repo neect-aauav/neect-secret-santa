@@ -13,30 +13,38 @@
 <body>
 	<div class="main">
     <div class="top">
-      <div>Secret Santa</div>
+      <div><a href="/">Secret Santa</a></div>
     </div>
     
     <div class="form-container">
       <form action="result" method="post">
-        <input type="text" name="ss-title" placeholder="Title" required>
+        <input style="text-align: center;" type="text" name="ss-title" placeholder="Title" value="{{title}}" required>
         <div>  
           <div id="members"> 
-            <div class="member">
-              <input type="text" placeholder="Name" name="name" required>
-              <input type="email" placeholder="Email" name="email" required>
-            </div>
-            <div class="member">
-              <input type="text" placeholder="Name" name="name" required>
-              <input type="email" placeholder="Email" name="email" required>
-            </div>
+            {% for i in range(members|int) %}
+              <div class="member">
+                <img style="opacity: 0.3;" src="../static/images/gift.png" alt="user">
+                <input type="text" placeholder="Name" name="name" required>
+                <input type="email" placeholder="Email" name="email" required>
+                  {% if members|int > 2 %}
+                    <div class="delete-icon">
+                  {% else %}
+                    <div class="delete-icon disabled">
+                  {% endif %}
+                  <img src="../static/images/trash.png" alt="Remove" title="Remove Member">
+                </div>
+              </div>
+            {% endfor %}
+
+            <script>let nmrMembers = parseInt('{{members}}');</script>
           </div>
           <div class="plus"><img src="../static/images/plus.png" alt="Add" title="Add New Member"></div>
-          <button type="submit" title="Create Secret Santa Pairs">Create</button>
+          <button id="submit-btn" type="submit" title="Create Secret Santa Pairs">Create</button>
         </div>
       </form>
     </div>
   </div>
 
-  <script src="../static/scripts/app.js"></script>
+  <script src="../static/scripts/script.js"></script>
 </body>
 </html>
