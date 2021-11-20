@@ -18,7 +18,7 @@ class EmailSender:
   def subject(self, subject):
     self.message["Subject"] = subject
 
-  def body(self, text, html):
+  def body(self, text=None, html=None):
     if text:
       self.message.attach(MIMEText(text, "plain"))
     if html:

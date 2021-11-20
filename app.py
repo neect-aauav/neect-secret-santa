@@ -1,6 +1,11 @@
 from flask import Flask, render_template, request, redirect
+from creds import *
+from email_sender import EmailSender
+from bs4 import BeautifulSoup
+
 import random
 import pprint
+import re
 
 pp = pprint.PrettyPrinter(indent=2)
 
@@ -31,7 +36,32 @@ def result():
 			pairs.append(pair)
 			# remove already chosen members
 			members = [member for member in members if (member not in pair)]
-		pp.pprint(pairs)
-		return render_template('result.html', pairs = pairs, title = request.form['ss-title'])
+		#pp.pprint(pairs)
+		ss_title = request.form['ss-title']
+
+		for pair in pairs:
+			for i in range(2):
+				receiver = pair[i]
+				partner = pair[(i-1)*(-1)]
+				sender = EmailSender(smtp_server, port, sender_email, receiver[1], password)
+				sender.subject("Secret Santa - Resultados")
+				file = open('email.html', 'r')
+				soup = BeautifulSoup(file.read(), 'html.parser')
+
+				# change partner's name
+				html_content = soup.find("li", {"id":"partner"})
+				html_content.find(text=re.compile('Partner')).replace_with(partner[0])
+				# change title
+				html_content = soup.find("div", {"id":"ss-title"})
+				html_content.find(text=re.compile('Title')).replace_with(ss_title)
+
+				html = f"""\
+					{soup}
+				"""
+				sender.body(html=html)
+				sender.send()
+
+
+		return render_template('result.html', pairs = pairs, title = ss_title)
 	else:
 		return "Odd number of members! Were you really going to leave someone without a mate?"
