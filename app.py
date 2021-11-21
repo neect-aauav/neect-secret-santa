@@ -19,24 +19,43 @@ app = Flask(__name__)
 def index():
 	members = 2
 	title = ''
+	gender = ''
 	if request.method == 'GET':
 		print(request.args)
 		members = request.args.get('members') if request.args.get('members') and int(request.args.get('members')) > 2 else 2
 		title = request.args.get('title') if request.args.get('title') else ''
-	return render_template('index.html', members = members, title=title)
+		gender = request.args.get('gender') if request.args.get('gender') else ''
+	return render_template('index.html', members = members, title=title, gender=gender)
 
 @app.route('/result', methods=["POST"])
 def result():
+	print(request.form.getlist("gender"));
+	genders = request.form.getlist("gender") if request.form.getlist("gender") else ['' for i in request.form.getlist('name')]
+
 	# [(name1, email1), (name2, email2), ...]
-	members = [(name, email) for name, email in zip(request.form.getlist('name'), request.form.getlist('email'))]
+	members = [(name, email, gender) for name, email, gender in zip(request.form.getlist('name'), request.form.getlist('email'), genders)]
 	if len(members) % 2 == 0:
-		pairs = []
+		pairs, males, females = [], [], []
+		if genders[0] != '':
+			males = [member for member in members if (member[2] == 'Male')]
+			females = [member for member in members if (member[2] == 'Female')]
+			
 		while len(members) > 0:
-			pair = random.sample(members, 2)
+			pair = []
+			if len(males) == 0 or len(females) == 0:
+				pair = random.sample(members, 2)
+			else:
+				pair.append(random.sample(males, 1)[0])
+				pair.append(random.sample(females, 1)[0])
+				# remove already chose males and females
+				males = [member for member in males if (member not in pair)]
+				females = [member for member in females if (member not in pair)]
+
 			pairs.append(pair)
 			# remove already chosen members
 			members = [member for member in members if (member not in pair)]
-		#pp.pprint(pairs)
+
+		pp.pprint(pairs)
 		ss_title = request.form['ss-title']
 
 		for pair in pairs:

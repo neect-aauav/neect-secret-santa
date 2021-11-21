@@ -13,7 +13,10 @@
 </head>
 
 <body>
-  <script>let nmrMembers = parseInt('{{members}}');</script>
+  <script>
+    let nmrMembers = parseInt('{{members}}');
+    let gender = '{{gender}}' === "true";
+  </script>
 
 	<div class="main">
     <div class="top">
@@ -32,11 +35,10 @@
             <script>document.write(nmrMembers)</script>
           </div>
           <form id="admin-form">
-            <input type="email" placeholder="Admin Email" required>
+            <input type="email" placeholder="Admin Email" title="Email from the person creating the Secret Santa" required>
             <div style="display: flex;">
-              <label style="font-size: 18px; margin-right: 10px; cursor: pointer;" for="consider-gender">Consider Gender</label>
+              <label style="font-size: 18px; margin-right: 10px" for="consider-gender">Consider Gender</label>
               <div id="consider-gender-btn" style="margin-top: 3px; cursor: pointer;" class="checkbox_wrapper">
-                <input type="checkbox" id="consider-gender">
                 <div class="custom-checkbox-ball"></div>
                 <div class="custom-checkbox-back"></div>
               </div>
@@ -46,7 +48,7 @@
       </div>
       <form id="members-form" action="result" method="post">
         <input style="display: none;" type="email" name="admin-email" id="admin-email" required>
-        <input style="text-align: center;" type="text" name="ss-title" placeholder="Title" value="{{title}}" required>
+        <input id="ss-title" style="text-align: center;" type="text" name="ss-title" placeholder="Title" value="{{title}}" required>
         <div>  
           <div id="members"> 
             {% for i in range(members|int) %}

@@ -16,6 +16,35 @@ const updateNmrMembersElem = () => {
 updateMembersWidth();
 updateSubmitButton();
 
+const genderSelector = () => {
+	const selector = document.createElement("select");
+	selector.name = "gender";
+	const female = document.createElement("option");
+	selector.appendChild(female);
+	female.appendChild(document.createTextNode("Female"));
+	const male = document.createElement("option");
+	selector.appendChild(male);
+	male.appendChild(document.createTextNode("Male"));
+	return selector;
+}
+
+const updateGender = () => {
+	insertUrlParam("gender", gender);
+	if (gender) {
+		Array.from(document.getElementsByClassName("member"))
+			.forEach(member => {
+				member.insertBefore(genderSelector(), member.children[member.childElementCount-1]);
+			});
+	}
+	else {
+		Array.from(document.getElementsByTagName("select"))
+			.forEach(select => select.remove());
+	}
+	updateMembersWidth();
+}
+
+document.getElementsByClassName("side-menu")[0].style.height = (window.innerHeight-document.getElementsByClassName("top")[0].offsetHeight)+"px";
+
 const hamburgerWrapper = document.getElementsByClassName("hamburger-menu")[0];
 hamburgerWrapper.addEventListener("click", () => {
 	const sideMenu = document.getElementsByClassName("side-menu")[0];
@@ -29,8 +58,7 @@ hamburgerWrapper.addEventListener("click", () => {
 	}
 });
 
-const windowWidth = window.innerWidth;
-if (windowWidth > 1215) {
+if (window.innerWidth > 1215) {
 	setTimeout(() => {
 		hamburgerWrapper.dispatchEvent(new MouseEvent("click", {
 			"view": window,
@@ -46,8 +74,7 @@ document.getElementsByClassName("plus")[0].addEventListener("click", () => {
 
 	const wrapper = document.createElement("div");
 	document.getElementById("members").appendChild(wrapper);
-	wrapper.classList.add("member", "hide-left");
-	setTimeout(() => wrapper.classList.remove("hide-left"), 100);
+	wrapper.classList.add("member");
 
 	const avatar = document.createElement("img");
 	wrapper.appendChild(avatar);
@@ -69,6 +96,8 @@ document.getElementsByClassName("plus")[0].addEventListener("click", () => {
 	email.name = "email";
 	email.required = true;
 
+	if (gender) wrapper.appendChild(genderSelector());
+
 	const binWrapper = document.createElement("div");
 	wrapper.appendChild(binWrapper);
 	binWrapper.classList.add("delete-icon");
@@ -89,37 +118,51 @@ document.getElementsByClassName("plus")[0].addEventListener("click", () => {
 	updateMembersWidth();
 	updateSubmitButton();
 	updateNmrMembersElem();
+
+	const members = document.getElementById("members");
+	members.scroll(0, members.offsetHeight);
 });
 
 document.getElementById("submit-btn").addEventListener("click", () => {
 	if (!document.getElementById("admin-email").checkValidity()) {
 		const sideMenu = document.getElementsByClassName("side-menu")[0];
 		if (sideMenu.classList.contains("side-menu-hidden-left"))
-			sideMenu.classList.remove("side-menu-hidden-left");
+			hamburgerWrapper.dispatchEvent(new MouseEvent("click", {
+				"view": window,
+				"bubbles": true,
+				"cancelable": false
+			}));
 		setTimeout(() => document.getElementById("admin-form").reportValidity(), 500);
 	}
 });
 
 document.getElementById("admin-form").getElementsByTagName("input")[0].addEventListener("input", e => document.getElementById("admin-email").value = e.target.value);
 
+if (gender) {
+	let time = window.innerWidth > 720 ? 700 : 0;
+	setTimeout(() => {
+		document.getElementById("consider-gender-btn").dispatchEvent(new MouseEvent("click", {
+			"view": window,
+			"bubbles": false,
+			"cancelable": false
+		}));
+	}, time);
+}
+
 const considerGender = document.getElementById("consider-gender");
 document.getElementById("consider-gender-btn").addEventListener("click", e => {
 	if (e.target.classList.contains("checkbox-enabled")) {
 		e.target.classList.remove("checkbox-enabled");
-		considerGender.checked = false;
+		gender = false;
 	}
 	else {
 		e.target.classList.add("checkbox-enabled");
-		considerGender.checked = true;
+		gender = true;
 	}
+	updateGender();
 });
 
-considerGender.addEventListener("input", () => {
-	if (considerGender.checked)
-		document.getElementById("consider-gender-btn").classList.add("checkbox-enabled");
-	else
-		document.getElementById("consider-gender-btn").classList.remove("checkbox-enabled");
-});
+document.getElementById("ss-title").addEventListener("input", e => insertUrlParam("title", e.target.value));
 
 document.addEventListener("mouseover", e => {
 	const target = e.target;
@@ -148,13 +191,8 @@ document.addEventListener("click", e => {
 	if (target.closest(".delete-icon") && nmrMembers > 2) {
 		nmrMembers--;
 
-		target.closest(".member").classList.add("hide-left");
-
-		setTimeout(() => {
-			target.closest(".member").remove();
-		}, 500);
-		
-		console.log(nmrMembers);
+		target.closest(".member").remove();
+	
 		// if only two rows left, disable bins
 		if (nmrMembers <= 2)
 			Array.from(document.getElementsByClassName("delete-icon"))
