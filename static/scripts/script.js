@@ -1,8 +1,44 @@
 const updateMembersWidth = () => document.getElementById("members").style.width = parseInt(document.getElementById("members").children[0].offsetWidth)+parseInt(getComputedStyle(document.getElementById("members").children[0]).getPropertyValue('padding'))+"px";
+const updateSubmitButton = () => document.getElementById("submit-btn").disabled = nmrMembers % 2 !== 0;
+
+const insertUrlParam = (key, value) => {
+	let searchParams = new URLSearchParams(window.location.search);
+	searchParams.set(key, value);
+	let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + searchParams.toString();
+	window.history.pushState({path: newurl}, '', newurl);
+}
+
+const updateNmrMembersElem = () => {
+	document.getElementById("nmr-members").innerText = "Members: "+nmrMembers;
+	insertUrlParam("members", nmrMembers);
+}
 
 updateMembersWidth();
+updateSubmitButton();
 
-const updateSubmitButton = () => document.getElementById("submit-btn").disabled = nmrMembers % 2 !== 0;
+const hamburgerWrapper = document.getElementsByClassName("hamburger-menu")[0];
+hamburgerWrapper.addEventListener("click", () => {
+	const sideMenu = document.getElementsByClassName("side-menu")[0];
+	if (!hamburgerWrapper.classList.contains("hamburger-menu-clicked")) {
+		hamburgerWrapper.classList.add("hamburger-menu-clicked");
+		sideMenu.classList.remove("side-menu-hidden-left");
+	}
+	else {
+		hamburgerWrapper.classList.remove("hamburger-menu-clicked");
+		sideMenu.classList.add("side-menu-hidden-left");
+	}
+});
+
+const windowWidth = window.innerWidth;
+if (windowWidth > 1215) {
+	setTimeout(() => {
+		hamburgerWrapper.dispatchEvent(new MouseEvent("click", {
+			"view": window,
+			"bubbles": true,
+			"cancelable": false
+		}));
+	}, 500);
+}
 
 document.getElementsByClassName("plus")[0].addEventListener("click", () => {
 	// add more members
@@ -51,8 +87,38 @@ document.getElementsByClassName("plus")[0].addEventListener("click", () => {
 	document.getElementById("submit-btn").disabled = false;
 	
 	updateMembersWidth();
-	
 	updateSubmitButton();
+	updateNmrMembersElem();
+});
+
+document.getElementById("submit-btn").addEventListener("click", () => {
+	if (!document.getElementById("admin-email").checkValidity()) {
+		const sideMenu = document.getElementsByClassName("side-menu")[0];
+		if (sideMenu.classList.contains("side-menu-hidden-left"))
+			sideMenu.classList.remove("side-menu-hidden-left");
+		setTimeout(() => document.getElementById("admin-form").reportValidity(), 500);
+	}
+});
+
+document.getElementById("admin-form").getElementsByTagName("input")[0].addEventListener("input", e => document.getElementById("admin-email").value = e.target.value);
+
+const considerGender = document.getElementById("consider-gender");
+document.getElementById("consider-gender-btn").addEventListener("click", e => {
+	if (e.target.classList.contains("checkbox-enabled")) {
+		e.target.classList.remove("checkbox-enabled");
+		considerGender.checked = false;
+	}
+	else {
+		e.target.classList.add("checkbox-enabled");
+		considerGender.checked = true;
+	}
+});
+
+considerGender.addEventListener("input", () => {
+	if (considerGender.checked)
+		document.getElementById("consider-gender-btn").classList.add("checkbox-enabled");
+	else
+		document.getElementById("consider-gender-btn").classList.remove("checkbox-enabled");
 });
 
 document.addEventListener("mouseover", e => {
@@ -96,10 +162,21 @@ document.addEventListener("click", e => {
 				.forEach(bin => bin.classList.add("disabled"));
 
 		updateSubmitButton();
+		updateNmrMembersElem();
 	}
 });
 
 window.addEventListener('resize', e => {
 	if (e.target.innerWidth > 720)
 		updateMembersWidth();
+
+	if (e.target.innerWidth > 1215) {
+		if (!hamburgerWrapper.classList.contains("hamburger-menu-clicked")) {
+			hamburgerWrapper.dispatchEvent(new MouseEvent("click", {
+				"view": window,
+				"bubbles": true,
+				"cancelable": false
+			}));
+		}
+	}
 });
