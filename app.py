@@ -54,6 +54,9 @@ def result():
 				# change title
 				html_content = soup.find("div", {"id":"ss-title"})
 				html_content.find(text=re.compile('Title')).replace_with(ss_title)
+				# change email
+				html_content = soup.find("div", {"id":"email"})
+				html_content.find(text=re.compile('email')).replace_with("Email do parceiro: "+partner[1])
 
 				html = f"""\
 					{soup}
