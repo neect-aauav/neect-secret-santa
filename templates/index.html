@@ -8,16 +8,44 @@
   <title>Secret Santa</title>
   <meta name="description" content="Make your Secret Santa pairings!">
   <link rel="stylesheet" href="static/css/styles.css">
+  <link rel="stylesheet" href="static/css/hamburger-menu.css">
+  <link rel="stylesheet" href="static/css/checkbox.css">
 </head>
 
 <body>
+  <script>let nmrMembers = parseInt('{{members}}');</script>
+
 	<div class="main">
     <div class="top">
       <div><a href="/">Secret Santa</a></div>
+      <div class="hamburger-menu">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
     </div>
     
     <div class="form-container">
-      <form action="result" method="post">
+      <div class="side-menu side-menu-hidden-left">
+        <div>
+          <div id="nmr-members">Members: 
+            <script>document.write(nmrMembers)</script>
+          </div>
+          <form id="admin-form">
+            <input type="email" placeholder="Admin Email" required>
+            <div style="display: flex;">
+              <label style="font-size: 18px; margin-right: 10px; cursor: pointer;" for="consider-gender">Consider Gender</label>
+              <div id="consider-gender-btn" style="margin-top: 3px; cursor: pointer;" class="checkbox_wrapper">
+                <input type="checkbox" id="consider-gender">
+                <div class="custom-checkbox-ball"></div>
+                <div class="custom-checkbox-back"></div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <form id="members-form" action="result" method="post">
+        <input style="display: none;" type="email" name="admin-email" id="admin-email" required>
         <input style="text-align: center;" type="text" name="ss-title" placeholder="Title" value="{{title}}" required>
         <div>  
           <div id="members"> 
@@ -35,8 +63,6 @@
                 </div>
               </div>
             {% endfor %}
-
-            <script>let nmrMembers = parseInt('{{members}}');</script>
           </div>
           <div class="plus"><img src="../static/images/add.png" alt="Add" title="Add New Member"></div>
           <button id="submit-btn" type="submit" title="Create Secret Santa Pairs">Create</button>
