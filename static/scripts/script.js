@@ -98,3 +98,8 @@ document.addEventListener("click", e => {
 		updateSubmitButton();
 	}
 });
+
+window.addEventListener('resize', e => {
+	if (e.target.innerWidth > 720)
+		updateMembersWidth();
+});
