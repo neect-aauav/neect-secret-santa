@@ -205,6 +205,14 @@ document.addEventListener("click", e => {
 		updateSubmitButton();
 		updateNmrMembersElem();
 	}
+
+	if (!target.closest(".side-menu") && !target.closest(".hamburger-menu") && window.innerWidth < 720 && hamburgerWrapper.classList.contains("hamburger-menu-clicked")) {
+		hamburgerWrapper.dispatchEvent(new MouseEvent("click", {
+			"view": window,
+			"bubbles": true,
+			"cancelable": false
+		}));
+	}
 });
 
 window.addEventListener('resize', e => {
@@ -221,3 +229,21 @@ window.addEventListener('resize', e => {
 		}
 	}
 });
+
+window.onbeforeunload = e => {
+	for (const input of Array.from(document.getElementsByTagName("INPUT"))) {
+		if (input.value !== '') {	
+			if (!e) e = window.event;
+			// e.cancelBubble is supported by IE 
+			e.cancelBubble = true;
+			e.returnValue = 'Deseja mesmo sair?';
+		
+			//e.stopPropagation works in Firefox.
+			if (e.stopPropagation) {
+				e.stopPropagation();
+				e.preventDefault();
+			}
+			break;
+		}
+	}
+}
