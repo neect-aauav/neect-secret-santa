@@ -126,7 +126,7 @@ def verify():
 
 			hash_val = md5((hash_salt+ss_admin_email+hash_salt_2).encode('utf-8'))
 
-			link = "http://192.168.1.95:5000/verification?email="+ss_admin_email+"&hash="+hash_val.hexdigest()
+			link = request.host_url+"verification?email="+ss_admin_email+"&hash="+hash_val.hexdigest()
 
 			# save pairs to file
 			with open("data/"+hash_val.hexdigest()+".json", 'w') as f:
