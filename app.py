@@ -2,7 +2,9 @@ from flask import Flask, render_template, request, redirect
 from creds import *
 from email_sender import EmailSender
 from bs4 import BeautifulSoup
+from hashlib import md5
 
+import base64
 import random
 import pprint
 import re
@@ -26,6 +28,57 @@ def index():
 		title = request.args.get('title') if request.args.get('title') else ''
 		gender = request.args.get('gender') if request.args.get('gender') else ''
 	return render_template('index.html', members = members, title=title, gender=gender)
+
+@app.route('/verification', methods=["POST", "GET"])
+def verify():
+	if request.method == 'GET':
+		email = request.args.get("email")
+		hash_val = request.args.get("hash")
+		if md5((hash_salt+email+hash_salt_2).encode('utf-8')).hexdigest() == hash_val:
+			return "CORRECT!"
+		else:
+			return "INCORRECT!"
+	else:
+		genders = request.form.getlist("gender") if request.form.getlist("gender") else ['' for i in request.form.getlist('name')]
+
+		# [(name1, email1), (name2, email2), ...]
+		members = [(name, email, gender) for name, email, gender in zip(request.form.getlist('name'), request.form.getlist('email'), genders)]
+		if len(members) % 2 == 0:
+			pairs, males, females = [], [], []
+			if genders[0] != '':
+				males = [member for member in members if (member[2] == 'Male')]
+				females = [member for member in members if (member[2] == 'Female')]
+				
+			while len(members) > 0:
+				pair = []
+				if len(males) == 0 or len(females) == 0:
+					pair = random.sample(members, 2)
+				else:
+					pair.append(random.sample(males, 1)[0])
+					pair.append(random.sample(females, 1)[0])
+					# remove already chose males and females
+					males = [member for member in males if (member not in pair)]
+					females = [member for member in females if (member not in pair)]
+
+				pairs.append(pair)
+				# remove already chosen members
+				members = [member for member in members if (member not in pair)]
+
+			pp.pprint(pairs)
+			
+			ss_title = request.form.get("ss-title")
+			ss_admin_email = request.form.get("admin-email")
+
+			hash_val = md5((hash_salt+ss_admin_email+hash_salt_2).encode('utf-8'))
+
+			sender = EmailSender(smtp_server, port, sender_email, ss_admin_email, password)
+			sender.subject("Secret Santa - Verification")
+			sender.body(text="http://192.168.1.95:5000/verification?email="+ss_admin_email+"&hash="+hash_val.hexdigest())
+			sender.send()
+
+			return render_template('verification.html', title=ss_title, email=ss_admin_email)
+		else:
+			return "Odd number of members! Were you really going to leave someone without a mate?"
 
 @app.route('/result', methods=["POST"])
 def result():
