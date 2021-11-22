@@ -35,45 +35,50 @@ def verify():
 	if request.method == 'GET':
 		email = request.args.get("email")
 		hash_val = request.args.get("hash")
-		hash_test = md5((hash_salt+email+hash_salt_2).encode('utf-8'))
-		if hash_test.hexdigest() == hash_val:
-			with open("data/"+hash_val+".json", 'r') as f:
-				pairs = json.load(f)
-				ss_title = pairs["title"]
-				del pairs["title"]
+		n_members = 0
+		ss_title = ''
+		if md5((hash_salt+email+hash_salt_2).encode('utf-8')).hexdigest() == hash_val:
+			try:
+				with open("data/"+hash_val+".json", 'r') as f:
+					pairs = json.load(f)
+					ss_title = pairs["title"]
+					del pairs["title"]
+					n_members = len(pairs)*2
 
-				for i in pairs:
-					pair = pairs[i]
-					for j in range(2):
-						receiver = pair[j]
-						partner = pair[(j-1)*(-1)]
-						sender = EmailSender(smtp_server, port, sender_email, receiver[1], password)
-						sender.subject("Secret Santa - Resultados")
-						file = open('email.html', 'r')
-						soup = BeautifulSoup(file.read(), 'html.parser')
+					for i in pairs:
+						pair = pairs[i]
+						for j in range(2):
+							receiver = pair[j]
+							partner = pair[(j-1)*(-1)]
+							sender = EmailSender(smtp_server, port, sender_email, receiver[1], password)
+							sender.subject("Secret Santa - Resultados")
+							file = open('email-results.html', 'r')
+							soup = BeautifulSoup(file.read(), 'html.parser')
 
-						# change partner's name
-						html_content = soup.find("li", {"id":"partner"})
-						html_content.find(text=re.compile('Partner')).replace_with(partner[0])
-						# change title
-						html_content = soup.find("div", {"id":"ss-title"})
-						html_content.find(text=re.compile('Title')).replace_with(ss_title)
-						# change email
-						html_content = soup.find("div", {"id":"email"})
-						html_content.find(text=re.compile('email')).replace_with(partner[1])
+							# change partner's name
+							html_content = soup.find("li", {"id":"partner"})
+							html_content.find(text=re.compile('Partner')).replace_with(partner[0])
+							# change title
+							html_content = soup.find("div", {"id":"ss-title"})
+							html_content.find(text=re.compile('Title')).replace_with(ss_title)
+							# change email
+							html_content = soup.find("div", {"id":"email"})
+							html_content.find(text=re.compile('email')).replace_with(partner[1])
 
-						html = f"""\
-							{soup}
-						"""
-						sender.body(html=html)
-						sender.send()
+							html = f"""\
+								{soup}
+							"""
+							sender.body(html=html)
+							sender.send()
 
-			if os.path.exists("data/"+hash_val+".json"):
-				os.remove("data/"+hash_val+".json")
+				if os.path.exists("data/"+hash_val+".json"):
+					os.remove("data/"+hash_val+".json")
 
-			return "CORRECT!"
+				return render_template("verified.html", title=ss_title, members=n_members)
+			except IOError:
+				return render_template("error.html", title="Verificação falhada!", subtitle="Parece que este link já foi usado")
 		else:
-			return "INCORRECT!"
+			return render_template("error.html", title="Verificação falhada!", subtitle="O link parece estar errado")
 	else:
 		genders = request.form.getlist("gender") if request.form.getlist("gender") else ['' for i in request.form.getlist('name')]
 
@@ -112,15 +117,31 @@ def verify():
 
 			hash_val = md5((hash_salt+ss_admin_email+hash_salt_2).encode('utf-8'))
 
+			link = "http://192.168.1.95:5000/verification?email="+ss_admin_email+"&hash="+hash_val.hexdigest()
+
 			# save pairs to file
 			with open("data/"+hash_val.hexdigest()+".json", 'w') as f:
 				f.write(json.dumps(pairs, indent=2))
 
 			sender = EmailSender(smtp_server, port, sender_email, ss_admin_email, password)
-			sender.subject("Secret Santa - Verification")
-			sender.body(text="http://192.168.1.95:5000/verification?email="+ss_admin_email+"&hash="+hash_val.hexdigest())
+			sender.subject("Secret Santa - Verificação")
+
+			file = open('email-verification.html', 'r')
+			soup = BeautifulSoup(file.read(), 'html.parser')
+
+			# change title
+			html_content = soup.find("div", {"id":"ss-title"})
+			html_content.find(text=re.compile('Title')).replace_with(ss_title)
+			# change link
+			html_content = soup.find("li", {"id":"link"})
+			html_content.find(text=re.compile('link')).replace_with(link)
+
+			html = f"""\
+				{soup}
+			"""
+			sender.body(html=html)
 			sender.send()
 
 			return render_template('verification.html', title=ss_title, email=ss_admin_email)
 		else:
-			return "Odd number of members! Were you really going to leave someone without a mate?"
+			return render_template("error.html", title="Não foi possível criar o Secret Santa!", subtitle="Número ímpar de participantes")

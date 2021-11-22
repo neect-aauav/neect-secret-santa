@@ -26,7 +26,7 @@ select {
 	color: #757575;
 	background-color: white;
 	font-size: 20px;
-	width: 100px;
+	width: fit-content;
 	padding-left: 4px;
 }
 
@@ -209,12 +209,19 @@ img:hover {
 	padding: 20px;
 	color: white;
 	font-size: 20px;
+	text-align: left;
 }
 
-.side-menu>div>div:not(:last-child) {
+.side-menu>div>*:not(:last-child) {
 	margin-bottom: 30px;
 	padding-bottom: 30px;
-		border-bottom: 1px solid #6b6b6b;
+	border-bottom: 1px solid #6b6b6b;
+}
+
+.side-menu-title {
+	background-color: #3e7561;
+    text-align: left;
+    border-left: 10px solid white;
 }
 
 @media only screen and (max-width: 720px) {

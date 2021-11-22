@@ -9,7 +9,7 @@ const insertUrlParam = (key, value) => {
 }
 
 const updateNmrMembersElem = () => {
-	document.getElementById("nmr-members").innerText = "Members: "+nmrMembers;
+	document.getElementById("nmr-members").innerText = "Participantes: "+nmrMembers;
 	insertUrlParam("members", nmrMembers);
 }
 
@@ -21,10 +21,10 @@ const genderSelector = () => {
 	selector.name = "gender";
 	const female = document.createElement("option");
 	selector.appendChild(female);
-	female.appendChild(document.createTextNode("Female"));
+	female.appendChild(document.createTextNode("Feminino"));
 	const male = document.createElement("option");
 	selector.appendChild(male);
-	male.appendChild(document.createTextNode("Male"));
+	male.appendChild(document.createTextNode("Masculino"));
 	return selector;
 }
 
@@ -51,10 +51,13 @@ hamburgerWrapper.addEventListener("click", () => {
 	if (!hamburgerWrapper.classList.contains("hamburger-menu-clicked")) {
 		hamburgerWrapper.classList.add("hamburger-menu-clicked");
 		sideMenu.classList.remove("side-menu-hidden-left");
+		document.getElementsByClassName("hamburger-menu-alert")[0].style.display = "none";
 	}
 	else {
 		hamburgerWrapper.classList.remove("hamburger-menu-clicked");
 		sideMenu.classList.add("side-menu-hidden-left");
+		if (!document.getElementById("admin-form").checkValidity())
+			document.getElementsByClassName("hamburger-menu-alert")[0].style.removeProperty("display");
 	}
 });
 

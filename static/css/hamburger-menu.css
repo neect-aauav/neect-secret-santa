@@ -49,3 +49,14 @@
     right: 0px;
 	height: 3px;
 }
+
+.hamburger-menu > .hamburger-menu-alert {
+	all: unset;
+    position: absolute;
+    background-color: #ff6363;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    right: 0;
+    bottom: 3px;
+}

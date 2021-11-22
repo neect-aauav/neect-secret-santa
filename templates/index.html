@@ -25,19 +25,18 @@
         <div></div>
         <div></div>
         <div></div>
+        <div class="hamburger-menu-alert"></div>
       </div>
     </div>
     
     <div class="form-container">
       <div class="side-menu side-menu-hidden-left">
+        <div class="side-menu-title">Setup</div>
         <div>
-          <div id="nmr-members">Members: 
-            <script>document.write(nmrMembers)</script>
-          </div>
           <form id="admin-form">
-            <input type="email" placeholder="Admin Email" title="Email from the person creating the Secret Santa" required>
-            <div style="display: flex;">
-              <label style="font-size: 18px; margin-right: 10px" for="consider-gender">Consider Gender</label>
+            <input type="email" placeholder="Email do Administrador" title="Email da pessoa que está a criar o Secret Santa" required>
+            <div style="display: flex; justify-content: space-between;">
+              <label style="font-size: 18px; margin-right: 10px" for="consider-gender">Géneros</label>
               <div id="consider-gender-btn" style="margin-top: 3px; cursor: pointer;" class="checkbox_wrapper">
                 <div class="custom-checkbox-ball"></div>
                 <div class="custom-checkbox-back"></div>
@@ -45,29 +44,33 @@
             </div>
           </form>
         </div>
+        <div class="side-menu-title">Informação</div>
+        <div id="nmr-members">Participantes: 
+          <script>document.write(nmrMembers)</script>
+        </div>
       </div>
       <form id="members-form" action="verification" method="post">
         <input style="display: none;" type="email" name="admin-email" id="admin-email" required>
-        <input id="ss-title" style="text-align: center;" type="text" name="ss-title" placeholder="Title" value="{{title}}" required>
+        <input id="ss-title" style="text-align: center;" type="text" name="ss-title" placeholder="Título" value="{{title}}" required>
         <div>  
           <div id="members"> 
             {% for i in range(members|int) %}
               <div class="member">
                 <img style="opacity: 0.3;" src="../static/images/gift.png" alt="user">
-                <input type="text" placeholder="Name" name="name" required>
+                <input type="text" placeholder="Nome" name="name" required>
                 <input type="email" placeholder="Email" name="email" required>
                   {% if members|int > 2 %}
                     <div class="delete-icon">
                   {% else %}
                     <div class="delete-icon disabled">
                   {% endif %}
-                  <img src="../static/images/trash.png" alt="Remove" title="Remove Member">
+                  <img src="../static/images/trash.png" alt="Remove" title="Remover Member">
                 </div>
               </div>
             {% endfor %}
           </div>
-          <div class="plus"><img src="../static/images/add.png" alt="Add" title="Add New Member"></div>
-          <button id="submit-btn" type="submit" title="Create Secret Santa Pairs">Create</button>
+          <div class="plus"><img src="../static/images/add.png" alt="Add" title="Adicionar Novo Membro"></div>
+          <button id="submit-btn" type="submit" title="Criar os Pares para o Secret Santa">Criar</button>
         </div>
       </form>
     </div>
