@@ -43,7 +43,7 @@ const updateGender = () => {
 	updateMembersWidth();
 }
 
-document.getElementsByClassName("side-menu")[0].style.height = (window.innerHeight-document.getElementsByClassName("top")[0].offsetHeight)+"px";
+document.getElementsByClassName("side-menu")[0].style.height = (document.documentElement.scrollHeight-document.getElementsByClassName("top")[0].offsetHeight)+"px";
 
 const hamburgerWrapper = document.getElementsByClassName("hamburger-menu")[0];
 hamburgerWrapper.addEventListener("click", () => {
@@ -140,6 +140,7 @@ document.getElementById("submit-btn").addEventListener("click", () => {
 });
 
 document.getElementById("admin-form").getElementsByTagName("input")[0].addEventListener("input", e => document.getElementById("admin-email").value = e.target.value);
+document.getElementById("admin-form").getElementsByTagName("input")[1].addEventListener("input", e => document.getElementById("ss-date").value = e.target.value);
 
 if (gender) {
 	let time = window.innerWidth > 720 ? 700 : 0;

@@ -35,10 +35,20 @@ input {
     padding-left: 8px;
 }
 
+input[type="date"] {
+	background-color: white;
+    color: #757575;
+}
+
 #admin-form input {
 	font-size: 16px;
 	width: auto;
     height: 25px;
+}
+
+#admin-form input {
+	margin-bottom: 10px;
+	margin-top: 5px;
 }
 
 .form-container input {
@@ -116,11 +126,7 @@ img:hover {
 	position: relative;
 }
 
-.form-container form>div {
-	margin-top: 30px;
-}
-
-.form-container>form>div>* {
+#members-form>form>div>* {
 	margin-top: 20px;
 }
 
@@ -129,6 +135,7 @@ img:hover {
     overflow-y: auto;
 	overflow-x: hidden;
 	margin: auto;
+	margin-top: 30px;
 }
 
 #members>div {
@@ -213,9 +220,9 @@ img:hover {
 	text-align: left;
 }
 
-.side-menu>div>*:not(:last-child) {
-	margin-bottom: 30px;
-	padding-bottom: 30px;
+.side-menu form>div:not(:last-child) {
+	margin-bottom: 20px;
+	padding-bottom: 20px;
 	border-bottom: 1px solid #6b6b6b;
 }
 

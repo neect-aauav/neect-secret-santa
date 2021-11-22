@@ -5,12 +5,9 @@ from bs4 import BeautifulSoup
 from hashlib import md5
 
 import random
-import pprint
 import re
 import json
 import os
-
-pp = pprint.PrettyPrinter(indent=2)
 
 # __name__ holds the name of the current Python module
 # Flask sets up some paths behind the scenes with this
@@ -43,6 +40,13 @@ def verify():
 					pairs = json.load(f)
 					ss_title = pairs["title"]
 					del pairs["title"]
+					ss_date = ''
+					try:
+						ss_date = pairs["date"]
+						del pairs["date"]
+					except KeyError:
+						ss_date = None
+
 					n_members = len(pairs)*2
 
 					for i in pairs:
@@ -52,7 +56,7 @@ def verify():
 							partner = pair[(j-1)*(-1)]
 							sender = EmailSender(smtp_server, port, sender_email, receiver[1], password)
 							sender.subject("Secret Santa - Resultados")
-							file = open('email-results.html', 'r')
+							file = open('static/emails/email-results.html' if ss_date else 'static/emails/email-results-no-date.html', 'r')
 							soup = BeautifulSoup(file.read(), 'html.parser')
 
 							# change partner's name
@@ -64,6 +68,10 @@ def verify():
 							# change email
 							html_content = soup.find("div", {"id":"email"})
 							html_content.find(text=re.compile('email')).replace_with(partner[1])
+							if ss_date:
+								# change date
+								html_content = soup.find("p", {"id":"date"})
+								html_content.find(text=re.compile('date')).replace_with("Compra-lhe algo até "+ss_date)
 
 							html = f"""\
 								{soup}
@@ -107,13 +115,14 @@ def verify():
 				members = [member for member in members if (member not in pair)]
 
 				counter+=1
-
-			pp.pprint(pairs)
 			
 			ss_title = request.form.get("ss-title")
 			ss_admin_email = request.form.get("admin-email")
+			ss_date = request.form.get("ss-date")
 
 			pairs["title"] = ss_title
+			if ss_date and ss_date != '':
+				pairs["date"] = ss_date
 
 			hash_val = md5((hash_salt+ss_admin_email+hash_salt_2).encode('utf-8'))
 
@@ -126,7 +135,7 @@ def verify():
 			sender = EmailSender(smtp_server, port, sender_email, ss_admin_email, password)
 			sender.subject("Secret Santa - Verificação")
 
-			file = open('email-verification.html', 'r')
+			file = open('static/emails/email-verification.html', 'r')
 			soup = BeautifulSoup(file.read(), 'html.parser')
 
 			# change title
@@ -145,3 +154,15 @@ def verify():
 			return render_template('verification.html', title=ss_title, email=ss_admin_email)
 		else:
 			return render_template("error.html", title="Não foi possível criar o Secret Santa!", subtitle="Número ímpar de participantes")
+
+@app.errorhandler(403)
+def page_not_found(e):
+    return render_template('error.html', title="403", subtitle="Acesso negado"), 403
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('error.html', title="404", subtitle="Página não encontrada"), 404
+
+@app.errorhandler(500)
+def page_not_found(e):
+    return render_template('error.html', title="Erro no servidor", subtitle="Pedimos desculpa pelo incómodo"), 500

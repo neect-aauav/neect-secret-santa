@@ -1,0 +1,106 @@
+<!doctype html>
+
+<html>
+	<body>
+		<style>
+			body, ul {
+				margin: 0;
+				padding: 0;
+				text-align: center;
+			}
+
+			body>p {
+				padding: 0px 40px;
+			}
+
+			a, a:hover, a:focus, a:active {
+				text-decoration: none !important;
+				color: inherit !important;
+			}
+
+			li {
+				list-style: none;
+			}
+			
+			.main {
+				width: 90%;
+				margin: auto;
+				border: 1px solid silver;
+				background-color: white;
+			}
+
+			.top {
+				background-color: #62bb9a;
+			}
+
+			.top>div {
+				margin: auto;
+				width: fit-content;
+				font-size: 30px;
+				color: white;
+				padding: 20px;
+			}
+
+			.result>div {
+				font-size: 25px;
+				background-color: white;
+    			color: #494949;
+				padding: 5px;
+			}
+
+			.result>ul {
+				display: inline-flex;
+				height: 200px;
+				width: 100%;
+				margin: auto;
+				background-color: #494949;
+			}
+
+			.result>ul>li {
+				width: 50%;
+				margin: auto;
+			}
+
+			.name {
+				margin-top: 18px;
+				font-size: 25px;
+				background-color: #62bb9a;
+				color: white;
+				padding: 5px;
+				border-radius: 30px;
+				height: 28px;
+				overflow: hidden;
+				padding-bottom: 10px;
+			}
+
+			#email {
+				background-color: #494949;
+				padding: 10px;
+				color: #e1e1e1;
+			}
+		</style>
+		<h1>Chegaram os resultados do Secret Santa!</h1>
+
+		<div class="main">
+			<div class="top">
+			  <div id="ss-title">Title</div>
+			</div>
+
+			<div class="result">
+				<div>Este é o teu par!</div>
+				<ul>
+					<li style="padding: 10px;">
+						<ul>
+							<li><img style ="width: 100px; padding: 15px;" src="https://i.imgur.com/Kt7mMyg.png" alt="Participante"></li>
+							<li title="Parceiro/a" id="partner" class="name">Partner</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+
+			<div id="email">email</div>
+		</div>
+		<p>Estás a receber este email porque te inscreveste no Secret Santa do teu núcleo.</p>
+		<p>Se achas que houve algum engano, por favor, contacta-nos.</p>
+	</body>
+</html>
