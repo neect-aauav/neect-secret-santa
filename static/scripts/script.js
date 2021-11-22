@@ -1,3 +1,5 @@
+let submitClicked = false;
+
 const updateMembersWidth = () => document.getElementById("members").style.width = parseInt(document.getElementById("members").children[0].offsetWidth)+parseInt(getComputedStyle(document.getElementById("members").children[0]).getPropertyValue('padding'))+"px";
 const updateSubmitButton = () => document.getElementById("submit-btn").disabled = nmrMembers % 2 !== 0;
 
@@ -137,6 +139,7 @@ document.getElementById("submit-btn").addEventListener("click", () => {
 			}));
 		setTimeout(() => document.getElementById("admin-form").reportValidity(), 500);
 	}
+	submitClicked = true;
 });
 
 document.getElementById("admin-form").getElementsByTagName("input")[0].addEventListener("input", e => document.getElementById("admin-email").value = e.target.value);
@@ -233,7 +236,7 @@ window.addEventListener('resize', e => {
 
 window.onbeforeunload = e => {
 	for (const input of Array.from(document.getElementsByTagName("INPUT"))) {
-		if (input.value !== '') {	
+		if (input.value !== '' && !submitClicked) {	
 			if (!e) e = window.event;
 			// e.cancelBubble is supported by IE 
 			e.cancelBubble = true;
