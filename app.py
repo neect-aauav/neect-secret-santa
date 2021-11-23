@@ -128,6 +128,9 @@ def verify():
 
 			link = request.host_url+"verification?email="+ss_admin_email+"&hash="+hash_val.hexdigest()
 
+			curpath = os.path.abspath(os.curdir)
+			print(curpath)
+
 			# save pairs to file
 			with open("data/"+hash_val.hexdigest()+".json", 'w') as f:
 				f.write(json.dumps(pairs, indent=2))
