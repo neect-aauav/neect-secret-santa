@@ -8,6 +8,9 @@ import random
 import re
 import json
 import os
+import pprint
+
+pp = pprint.PrettyPrinter(indent=2)
 
 # __name__ holds the name of the current Python module
 # Flask sets up some paths behind the scenes with this
@@ -91,72 +94,124 @@ def verify():
 		genders = request.form.getlist("gender") if request.form.getlist("gender") else ['' for i in request.form.getlist('name')]
 
 		# [(name1, email1), (name2, email2), ...]
-		members = [(name, email, gender) for name, email, gender in zip(request.form.getlist('name'), request.form.getlist('email'), genders)]
-		if len(members) % 2 == 0:
-			pairs, males, females = {}, [], []
-			if genders[0] != '':
-				males = [member for member in members if (member[2] == 'Male')]
-				females = [member for member in members if (member[2] == 'Female')]
-			
-			counter = 0
-			while len(members) > 0:
-				pair = []
-				if len(males) == 0 or len(females) == 0:
-					pair = random.sample(members, 2)
+		receivers = [(name, email, gender) for name, email, gender in zip(request.form.getlist('name'), request.form.getlist('email'), genders)]
+		givers = receivers
+		pairs, males_rec, females_rec, males_giv, females_giv = {}, [], [], [], []
+		size = len(receivers)
+		if genders[0] != '':
+			males_rec = [m for m in receivers if (m[2] == 'Masculino')]
+			females_rec = [m for m in receivers if (m[2] == 'Feminino')]
+			males_giv = males_rec
+			females_giv = females_rec
+
+		print("Males: ")
+		pp.pprint(males_rec)
+		print("Females: ")
+		pp.pprint(females_rec)
+
+		counter = 0
+		receiver, giver = "", ""
+		while len(givers) > 0:
+			print(counter)
+			# if gender pairing is possible
+			if (len(males_rec) > 0 and len(females_giv) > 0) or (len(females_rec) > 0 and len(males_giv) > 0):
+				if len(males_rec) > 0:
+					print("male - female")
+					# if 2 iterations left
+					# check for common a member in both lists
+					commonMember = set(males_rec) & set(females_giv)
+					if counter == (size-1) and commonMember:
+						print("SPECIAL CASE")
+						# if common member, then make sure last iteration doesn't end with the same member
+						receiver = commonMember
+						giver = [m for m in females_giv if (m != commonMember)][0]
+					else:
+						receiver = random.sample(males_rec, 1)[0]	
+						giver = random.sample(females_giv, 1)[0]
+						# update changed arrays
+						males_rec = [m for m in males_rec if (m != receiver)]
+						females_giv = [m for m in females_giv if (m != giver)]
 				else:
-					pair.append(random.sample(males, 1)[0])
-					pair.append(random.sample(females, 1)[0])
-					# remove already chose males and females
-					males = [member for member in males if (member not in pair)]
-					females = [member for member in females if (member not in pair)]
+					print("female - male")
+					# if 2 iterations left
+					# check for common a member in both lists
+					commonMember = set(females_rec) & set(males_giv)
+					if counter == (size-1) and commonMember:
+						print("SPECIAL CASE")
+						# if common member, then make sure last iteration doesn't end with the same member
+						receiver = commonMember
+						giver = [m for m in males_giv if (m != commonMember)][0]
+					else:
+						receiver = random.sample(females_rec, 1)[0]
+						giver = random.sample(males_giv, 1)[0]
+						# update changed arrays
+						females_rec = [m for m in females_rec if (m != receiver)]
+						males_giv = [m for m in males_giv if (m != giver)]
+			else:
+				print("any")
+				receiver = random.sample(givers, 1)[0]
+				giver = random.sample([m for m in receivers if (m != receiver)], 1)[0]
 
-				pairs[counter]= pair
-				# remove already chosen members
-				members = [member for member in members if (member not in pair)]
+			pair = [receiver, giver]
+			pairs[counter] = pair
 
-				counter+=1
-			
-			ss_title = request.form.get("ss-title")
-			ss_admin_email = request.form.get("admin-email")
-			ss_date = request.form.get("ss-date")
+			# remove already chosen giver
+			receivers = [m for m in receivers if (m != giver)]
+			# remove already paired receiver
+			givers = [m for m in givers if (m != receiver)]
+		
+			print(receiver)
+			print(giver)
+			print("givers")
+			pp.pprint(givers)
+			print("receivers")
+			pp.pprint(receivers)
+			print("\n")
 
-			pairs["title"] = ss_title
-			if ss_date and ss_date != '':
-				pairs["date"] = ss_date
+			counter+=1
 
-			hash_val = md5((hash_salt+ss_admin_email+hash_salt_2).encode('utf-8'))
+		pp.pprint(pairs)
+		
+		ss_title = request.form.get("ss-title")
+		ss_admin_email = request.form.get("admin-email")
+		ss_date = request.form.get("ss-date")
 
-			link = request.host_url+"verification?email="+ss_admin_email+"&hash="+hash_val.hexdigest()
+		pairs["title"] = ss_title
+		if ss_date and ss_date != '':
+			pairs["date"] = ss_date
 
-			curpath = os.path.abspath(os.curdir)
-			print(curpath)
+		hash_val = md5((hash_salt+ss_admin_email+hash_salt_2).encode('utf-8'))
 
-			# save pairs to file
-			with open("data/"+hash_val.hexdigest()+".json", 'w') as f:
-				f.write(json.dumps(pairs, indent=2))
+		link = request.host_url+"verification?email="+ss_admin_email+"&hash="+hash_val.hexdigest()
 
-			sender = EmailSender(smtp_server, port, sender_email, ss_admin_email, password)
-			sender.subject("Secret Santa - Verificação")
+		curpath = os.path.abspath(os.curdir)
+		print(curpath)
 
-			file = open('static/emails/email-verification.html', 'r')
-			soup = BeautifulSoup(file.read(), 'html.parser')
+		# save pairs to file
+		with open("data/"+hash_val.hexdigest()+".json", 'w') as f:
+			f.write(json.dumps(pairs, indent=2))
 
-			# change title
-			html_content = soup.find("div", {"id":"ss-title"})
-			html_content.find(text=re.compile('Title')).replace_with(ss_title)
-			# change link
-			html_content = soup.find("li", {"id":"link"})
-			html_content.find(text=re.compile('link')).replace_with(link)
+		sender = EmailSender(smtp_server, port, sender_email, ss_admin_email, password)
+		sender.subject("Secret Santa - Verificação")
 
-			html = f"""\
-				{soup}
-			"""
-			sender.body(html=html)
-			sender.send()
+		file = open('static/emails/email-verification.html', 'r')
+		soup = BeautifulSoup(file.read(), 'html.parser')
 
-			return render_template('verification.html', title=ss_title, email=ss_admin_email)
-		else:
-			return render_template("error.html", title="Não foi possível criar o Secret Santa!", subtitle="Número ímpar de participantes")
+		# change title
+		html_content = soup.find("div", {"id":"ss-title"})
+		html_content.find(text=re.compile('Title')).replace_with(ss_title)
+		# change link
+		html_content = soup.find("li", {"id":"link"})
+		html_content.find(text=re.compile('link')).replace_with(link)
+
+		html = f"""\
+			{soup}
+		"""
+		sender.body(html=html)
+		# sender.send()
+
+		return render_template('verification.html', title=ss_title, email=ss_admin_email)
+		
 
 @app.errorhandler(403)
 def page_not_found(e):

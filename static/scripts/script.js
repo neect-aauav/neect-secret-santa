@@ -1,7 +1,6 @@
 let submitClicked = false;
 
 const updateMembersWidth = () => document.getElementById("members").style.width = parseInt(document.getElementById("members").children[0].offsetWidth)+parseInt(getComputedStyle(document.getElementById("members").children[0]).getPropertyValue('padding'))+"px";
-const updateSubmitButton = () => document.getElementById("submit-btn").disabled = nmrMembers % 2 !== 0;
 
 const insertUrlParam = (key, value) => {
 	let searchParams = new URLSearchParams(window.location.search);
@@ -16,7 +15,6 @@ const updateNmrMembersElem = () => {
 }
 
 updateMembersWidth();
-updateSubmitButton();
 
 const genderSelector = () => {
 	const selector = document.createElement("select");
@@ -117,11 +115,7 @@ document.getElementsByClassName("plus")[0].addEventListener("click", () => {
 		.filter(bin => bin.classList.contains("disabled"))
 		.forEach(bin => bin.classList.remove("disabled"));
 
-	// enable submit button, if needed
-	document.getElementById("submit-btn").disabled = false;
-	
 	updateMembersWidth();
-	updateSubmitButton();
 	updateNmrMembersElem();
 
 	const members = document.getElementById("members");
@@ -206,7 +200,6 @@ document.addEventListener("click", e => {
 				.filter(bin => !bin.classList.contains("disabled"))
 				.forEach(bin => bin.classList.add("disabled"));
 
-		updateSubmitButton();
 		updateNmrMembersElem();
 	}
 
