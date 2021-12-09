@@ -145,17 +145,22 @@ document.getElementById("submit-btn").addEventListener("click", () => {
 
 document.getElementById("copy-link-btn").addEventListener("click", e => {
 	const target = e.target.parentElement;
-	window.navigator.clipboard.writeText(window.location.href).
-		then(() => {
-			target.classList.add("hex-62bb9a");
-			target.style.transition = "0.5s";
-			target.style.transform = "scale(1.4)";
-			setTimeout(() => {
-				target.classList.remove("hex-62bb9a");
-				target.style.removeProperty("transition");
-				target.style.removeProperty("transform");
-			}, 1000);
-		});
+	if (window.navigator.clipboard) {
+		window.navigator.clipboard.writeText(window.location.href).
+			then(() => {
+				target.classList.add("hex-62bb9a");
+				target.style.transition = "0.5s";
+				target.style.transform = "scale(1.4)";
+				setTimeout(() => {
+					target.classList.remove("hex-62bb9a");
+					target.style.removeProperty("transition");
+					target.style.removeProperty("transform");
+				}, 1000);
+			});
+	}
+	else {
+		alert("Can't use navigator clipboard in insecure connection!");
+	}
 });
 
 document.getElementById("admin-form").getElementsByTagName("input")[0].addEventListener("input", e => document.getElementById("admin-email").value = e.target.value);
@@ -250,11 +255,32 @@ document.addEventListener("click", e => {
 			"cancelable": false
 		}));
 	}
+});
 
-	// clicked on gender selector
-	if (target.tagName == "SELECT" && target.name == "gender") {
-		updateNmrGenders();	
-	}
+// update gender number when clicking on gender selector
+setTimeout(() => {
+	Array.from(document.getElementsByTagName("select")).
+		filter(select => select.name == "gender").
+		forEach(select => select.
+			addEventListener("input", () => updateNmrGenders()));
+}, 1000);
+
+// swipe right event for mobile
+document.addEventListener('swiped-right', () => {
+	hamburgerWrapper.dispatchEvent(new MouseEvent("click", {
+		"view": window,
+		"bubbles": true,
+		"cancelable": false
+	}));
+});
+
+// swipe left event for mobile
+document.addEventListener('swiped-left', () => {
+	hamburgerWrapper.dispatchEvent(new MouseEvent("click", {
+		"view": window,
+		"bubbles": true,
+		"cancelable": false
+	}));
 });
 
 window.addEventListener('resize', e => {

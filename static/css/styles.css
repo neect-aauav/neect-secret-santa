@@ -207,6 +207,7 @@ img:hover {
     background-color: #494949;
     z-index: 1;
 	transition: 0.3s;
+	overflow-y: auto;
 }
 
 .side-menu-hidden-left {
