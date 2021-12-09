@@ -1,6 +1,6 @@
 # Secret Santa Web App
 
-by Núcleo de Estudantes de Engenharia de Computadores e Telemática, Universidade de Aveiro
+Made by Núcleo de Estudantes de Engenharia de Computadores e Telemática, University of Aveiro
 
 ## Setup
 Create a Python Virtual Environment:
