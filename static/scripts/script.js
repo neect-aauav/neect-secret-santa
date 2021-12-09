@@ -14,6 +14,12 @@ const updateNmrMembersElem = () => {
 	insertUrlParam("members", nmrMembers);
 }
 
+const updateNmrGenders = () => {
+	// timeout to make sure htmlcollection is not empty
+	if (document.getElementById("nmr-males")) setTimeout(() => document.getElementById("nmr-males").innerText = `Masculinos: ${Array.from(document.getElementsByTagName("select")).filter(select => select.value == "Masculino").length}`, 0);
+	if (document.getElementById("nmr-females")) setTimeout(() => document.getElementById("nmr-females").innerText = `Femininos: ${Array.from(document.getElementsByTagName("select")).filter(select => select.value == "Feminino").length}`, 0);
+}
+
 updateMembersWidth();
 
 const genderSelector = () => {
@@ -117,6 +123,7 @@ document.getElementsByClassName("plus")[0].addEventListener("click", () => {
 
 	updateMembersWidth();
 	updateNmrMembersElem();
+	updateNmrGenders();
 
 	const members = document.getElementById("members");
 	members.scroll(0, members.offsetHeight);
@@ -167,13 +174,30 @@ if (gender) {
 
 const considerGender = document.getElementById("consider-gender");
 document.getElementById("consider-gender-btn").addEventListener("click", e => {
+	// disable gender
 	if (e.target.classList.contains("checkbox-enabled")) {
 		e.target.classList.remove("checkbox-enabled");
 		gender = false;
+
+		if (document.getElementById("nmr-males")) document.getElementById("nmr-males").remove();
+		if (document.getElementById("nmr-females")) document.getElementById("nmr-females").remove();
 	}
+	// enable gender
 	else {
 		e.target.classList.add("checkbox-enabled");
 		gender = true;
+
+		// get second side menu section
+		const section = document.getElementsByClassName("side-menu-section")[1].getElementsByClassName("side-menu-listings")[0];
+		if (section) {
+			const males = document.createElement("div");
+			section.appendChild(males);
+			males.id = "nmr-males";
+			const females = document.createElement("div");
+			section.appendChild(females);
+			females.id = "nmr-females";
+			updateNmrGenders();
+		}
 	}
 	updateGender();
 });
@@ -216,6 +240,7 @@ document.addEventListener("click", e => {
 				.forEach(bin => bin.classList.add("disabled"));
 
 		updateNmrMembersElem();
+		updateNmrGenders();
 	}
 
 	if (!target.closest(".side-menu") && !target.closest(".hamburger-menu") && window.innerWidth < 720 && hamburgerWrapper.classList.contains("hamburger-menu-clicked")) {
@@ -224,6 +249,11 @@ document.addEventListener("click", e => {
 			"bubbles": true,
 			"cancelable": false
 		}));
+	}
+
+	// clicked on gender selector
+	if (target.tagName == "SELECT" && target.name == "gender") {
+		updateNmrGenders();	
 	}
 });
 
