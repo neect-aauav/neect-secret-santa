@@ -134,6 +134,7 @@ document.getElementsByClassName("plus")[0].addEventListener("click", () => {
 	updateMembersWidth();
 	updateNmrMembersElem();
 	updateNmrGenders();
+	updateSelectorsInputListener();
 
 	const members = document.getElementById("members");
 	members.scroll(0, members.offsetHeight);
