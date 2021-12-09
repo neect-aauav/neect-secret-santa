@@ -47,37 +47,38 @@ def verify():
 					except KeyError:
 						ss_date = None
 
-					n_members = len(pairs)*2
+					n_members = len(pairs)
 
 					for i in pairs:
-						pair = pairs[i]
-						for j in range(2):
-							receiver = pair[j]
-							partner = pair[(j-1)*(-1)]
-							sender = EmailSender(smtp_server, port, sender_email, receiver[1], password)
-							sender.subject("Secret Santa - Resultados")
-							file = open('static/emails/email-results.html' if ss_date else 'static/emails/email-results-no-date.html', 'r')
-							soup = BeautifulSoup(file.read(), 'html.parser')
+						giver = pairs[i][0]
+						receiver = pairs[i][1]
+						sender = EmailSender(smtp_server, port, sender_email, giver[1], password)
+						sender.subject("Secret Santa - Resultados")
+						file = open('static/emails/email-results.html' if ss_date else 'static/emails/email-results-no-date.html', 'r')
+						soup = BeautifulSoup(file.read(), 'html.parser')
 
-							# change partner's name
-							html_content = soup.find("li", {"id":"partner"})
-							html_content.find(text=re.compile('Partner')).replace_with(partner[0])
-							# change title
-							html_content = soup.find("div", {"id":"ss-title"})
-							html_content.find(text=re.compile('Title')).replace_with(ss_title)
-							# change email
-							html_content = soup.find("div", {"id":"email"})
-							html_content.find(text=re.compile('email')).replace_with(partner[1])
-							if ss_date:
-								# change date
-								html_content = soup.find("p", {"id":"date"})
-								html_content.find(text=re.compile('date')).replace_with("Compra-lhe algo até "+ss_date)
+						# change giver's name
+						html_content = soup.find("span", {"id":"giver"})
+						html_content.find(text=re.compile('Giver')).replace_with(giver[0])
+						# change receiver's name
+						html_content = soup.find("li", {"id":"receiver"})
+						html_content.find(text=re.compile('Receiver')).replace_with(receiver[0])
+						# change title
+						html_content = soup.find("div", {"id":"ss-title"})
+						html_content.find(text=re.compile('Title')).replace_with(ss_title)
+						# change email
+						html_content = soup.find("div", {"id":"email"})
+						html_content.find(text=re.compile('email')).replace_with(receiver[1])
+						if ss_date:
+							# change date
+							html_content = soup.find("p", {"id":"date"})
+							html_content.find(text=re.compile('date')).replace_with("Compra-lhe algo até "+ss_date)
 
-							html = f"""\
-								{soup}
-							"""
-							sender.body(html=html)
-							sender.send()
+						html = f"""\
+							{soup}
+						"""
+						sender.body(html=html)
+						sender.send()
 
 				if os.path.exists("data/"+hash_val+".json"):
 					os.remove("data/"+hash_val+".json")
@@ -158,7 +159,7 @@ def verify():
 			{soup}
 		"""
 		sender.body(html=html)
-		# sender.send()
+		sender.send()
 
 		return render_template('verification.html', title=ss_title, email=ss_admin_email)
 		
