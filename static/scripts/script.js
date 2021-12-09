@@ -21,17 +21,6 @@ const updateNmrGenders = () => {
 	if (document.getElementById("nmr-females")) setTimeout(() => document.getElementById("nmr-females").innerText = `Femininos: ${Array.from(document.getElementsByTagName("select")).filter(select => select.value == "Feminino").length}`, 0);
 }
 
-const updateSelectorsInputListener = () => {
-	// update gender number when clicking on gender selector
-	setTimeout(() => {
-		Array.from(document.getElementsByTagName("select")).
-			filter(select => select.name == "gender").
-			forEach(select => select.
-				addEventListener("input", () => updateNmrGenders()));
-	}, 1000);
-}
-updateSelectorsInputListener();
-
 const genderSelector = () => {
 	const selector = document.createElement("select");
 	selector.name = "gender";
@@ -134,7 +123,6 @@ document.getElementsByClassName("plus")[0].addEventListener("click", () => {
 	updateMembersWidth();
 	updateNmrMembersElem();
 	updateNmrGenders();
-	updateSelectorsInputListener();
 
 	const members = document.getElementById("members");
 	members.scroll(0, members.offsetHeight);
@@ -213,7 +201,6 @@ document.getElementById("consider-gender-btn").addEventListener("click", e => {
 			section.appendChild(females);
 			females.id = "nmr-females";
 			updateNmrGenders();
-			updateSelectorsInputListener();
 		}
 	}
 	updateGender();
@@ -269,22 +256,47 @@ document.addEventListener("click", e => {
 	}
 });
 
+document.addEventListener("input", e => {
+	const target = e.target;
+
+	// update gender number when clicking on gender selector
+	if (target.tagName == "SELECT" && target.name == "gender") {
+		updateNmrGenders();
+	}
+
+	/*if (target.tagName == "INPUT" && target.name == "name") {
+		for (let input of document.getElementsByTagName("INPUT")) {
+			if (input.name == "name") {
+				if (input.value == target.value) {
+					document.getElementById("submit-btn").disabled = true;
+					break;
+				}
+				document.getElementById("submit-btn").disabled = false;
+			}
+		}
+	}*/
+});
+
 // swipe right event for mobile
 document.addEventListener('swiped-right', () => {
-	hamburgerWrapper.dispatchEvent(new MouseEvent("click", {
-		"view": window,
-		"bubbles": true,
-		"cancelable": false
-	}));
+	if (document.getElementsByClassName("hamburger-menu-clicked").length == 0) {
+		hamburgerWrapper.dispatchEvent(new MouseEvent("click", {
+			"view": window,
+			"bubbles": true,
+			"cancelable": false
+		}));
+	}
 });
 
 // swipe left event for mobile
 document.addEventListener('swiped-left', () => {
-	hamburgerWrapper.dispatchEvent(new MouseEvent("click", {
-		"view": window,
-		"bubbles": true,
-		"cancelable": false
-	}));
+	if (document.getElementsByClassName("hamburger-menu-clicked").length > 0) {
+		hamburgerWrapper.dispatchEvent(new MouseEvent("click", {
+			"view": window,
+			"bubbles": true,
+			"cancelable": false
+		}));
+	}
 });
 
 window.addEventListener('resize', e => {
