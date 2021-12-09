@@ -8,9 +8,6 @@ import random
 import re
 import json
 import os
-import pprint
-
-pp = pprint.PrettyPrinter(indent=2)
 
 # __name__ holds the name of the current Python module
 # Flask sets up some paths behind the scenes with this
@@ -98,57 +95,20 @@ def verify():
 		givers = receivers
 		pairs, males_rec, females_rec, males_giv, females_giv = {}, [], [], [], []
 		size = len(receivers)
+
 		if genders[0] != '':
 			males_rec = [m for m in receivers if (m[2] == 'Masculino')]
 			females_rec = [m for m in receivers if (m[2] == 'Feminino')]
 			males_giv = males_rec
 			females_giv = females_rec
 
-		print("Males: ")
-		pp.pprint(males_rec)
-		print("Females: ")
-		pp.pprint(females_rec)
-
 		counter = 0
 		receiver, giver = "", ""
 		while len(givers) > 0:
-			print(counter)
 			# if gender pairing is possible
 			if (len(males_rec) > 0 and len(females_giv) > 0) or (len(females_rec) > 0 and len(males_giv) > 0):
-				if len(males_rec) > 0:
-					print("male - female")
-					# if 2 iterations left
-					# check for common a member in both lists
-					commonMember = set(males_rec) & set(females_giv)
-					if counter == (size-1) and commonMember:
-						print("SPECIAL CASE")
-						# if common member, then make sure last iteration doesn't end with the same member
-						receiver = commonMember
-						giver = [m for m in females_giv if (m != commonMember)][0]
-					else:
-						receiver = random.sample(males_rec, 1)[0]	
-						giver = random.sample(females_giv, 1)[0]
-						# update changed arrays
-						males_rec = [m for m in males_rec if (m != receiver)]
-						females_giv = [m for m in females_giv if (m != giver)]
-				else:
-					print("female - male")
-					# if 2 iterations left
-					# check for common a member in both lists
-					commonMember = set(females_rec) & set(males_giv)
-					if counter == (size-1) and commonMember:
-						print("SPECIAL CASE")
-						# if common member, then make sure last iteration doesn't end with the same member
-						receiver = commonMember
-						giver = [m for m in males_giv if (m != commonMember)][0]
-					else:
-						receiver = random.sample(females_rec, 1)[0]
-						giver = random.sample(males_giv, 1)[0]
-						# update changed arrays
-						females_rec = [m for m in females_rec if (m != receiver)]
-						males_giv = [m for m in males_giv if (m != giver)]
+				receiver, giver = gendered_pairing((males_rec, females_giv) if len(males_rec) > 0 else (females_rec, males_giv), counter == size-1)
 			else:
-				print("any")
 				receiver = random.sample(givers, 1)[0]
 				giver = random.sample([m for m in receivers if (m != receiver)], 1)[0]
 
@@ -159,19 +119,9 @@ def verify():
 			receivers = [m for m in receivers if (m != giver)]
 			# remove already paired receiver
 			givers = [m for m in givers if (m != receiver)]
-		
-			print(receiver)
-			print(giver)
-			print("givers")
-			pp.pprint(givers)
-			print("receivers")
-			pp.pprint(receivers)
-			print("\n")
 
 			counter+=1
 
-		pp.pprint(pairs)
-		
 		ss_title = request.form.get("ss-title")
 		ss_admin_email = request.form.get("admin-email")
 		ss_date = request.form.get("ss-date")
@@ -212,6 +162,25 @@ def verify():
 
 		return render_template('verification.html', title=ss_title, email=ss_admin_email)
 		
+def gendered_pairing(lists, before_last_iter):
+	receivers_list, givers_list = lists
+	# if before last iteration left
+	# check for common a member in both lists
+	commonMember = set(receivers_list) & set(givers_list)
+	if before_last_iter and commonMember:
+		# if common member, then make sure last iteration doesn't end with the same member
+		receiver = commonMember
+		giver = [m for m in givers_list if (m != commonMember)][0]
+		rec_i = 0 if receiver == receivers_list[0] else 1
+		giv_i = 0 if giver == givers_list[0] else 1
+	else:
+		rec_i, receiver = random.sample(list(enumerate(receivers_list)), 1)[0]	
+		giv_i, giver = random.sample(list(enumerate(givers_list)), 1)[0]
+
+	# update changed arrays
+	del receivers_list[rec_i]	
+	del givers_list[giv_i]
+	return receiver, giver
 
 @app.errorhandler(403)
 def page_not_found(e):
