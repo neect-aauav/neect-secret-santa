@@ -25,3 +25,8 @@ Run the app:
 $ flask run
 ```
 The app will be running at http://127.0.0.1:5000/
+
+## Structure
+- **/data**: used to temporarily save pairings for each session still waiting for email confirmation
+- **/static**: styles, scripts, images, etc...
+- **/templates**: html pages 
