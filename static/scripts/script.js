@@ -6,7 +6,7 @@ const insertUrlParam = (key, value) => {
 	let searchParams = new URLSearchParams(window.location.search);
 	searchParams.set(key, value);
 	let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + searchParams.toString();
-	window.history.pushState({path: newurl}, '', newurl);
+	window.history.replaceState({}, '', newurl);
 }
 
 const updateNmrMembersElem = () => {
@@ -134,6 +134,21 @@ document.getElementById("submit-btn").addEventListener("click", () => {
 		setTimeout(() => document.getElementById("admin-form").reportValidity(), 500);
 	}
 	submitClicked = true;
+});
+
+document.getElementById("copy-link-btn").addEventListener("click", e => {
+	const target = e.target.parentElement;
+	window.navigator.clipboard.writeText(window.location.href).
+		then(() => {
+			target.classList.add("hex-62bb9a");
+			target.style.transition = "0.5s";
+			target.style.transform = "scale(1.4)";
+			setTimeout(() => {
+				target.classList.remove("hex-62bb9a");
+				target.style.removeProperty("transition");
+				target.style.removeProperty("transform");
+			}, 1000);
+		});
 });
 
 document.getElementById("admin-form").getElementsByTagName("input")[0].addEventListener("input", e => document.getElementById("admin-email").value = e.target.value);

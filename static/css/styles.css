@@ -213,7 +213,7 @@ img:hover {
 	left: -230px;
 }
 
-.side-menu>div {
+.side-menu-section>div {
 	padding: 20px;
 	color: white;
 	font-size: 20px;
@@ -230,6 +230,15 @@ img:hover {
 	background-color: #3e7561;
     text-align: left;
     border-left: 10px solid white;
+}
+
+/* https://codepen.io/sosuke/pen/Pjoqqp */
+.hex-62bb9a {
+	filter: invert(36%) sepia(46%) saturate(348%) hue-rotate(106deg) brightness(91%) contrast(90%);
+}
+
+.hex-62bb9a, .hex-62bb9a * {
+	opacity: 1 !important;
 }
 
 @media only screen and (max-width: 720px) {

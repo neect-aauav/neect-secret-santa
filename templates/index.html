@@ -31,30 +31,42 @@
     
     <div class="form-container">
       <div class="side-menu side-menu-hidden-left">
-        <div class="side-menu-title">Setup</div>
-        <div>
-          <form id="admin-form">
-            <div>
-              <label style="padding-left: 5px; font-size: 16px;">Email</label>
-              <input type="email" placeholder="Email do Administrador" title="Email da pessoa que está a criar o Secret Santa" required>
-              <label style="padding-left: 5px; font-size: 16px;">Data do Evento</label>
-              <input type="date" title="Data do Secret Santa">
-            </div>
-            <div>
-              <div style="display: flex; justify-content: space-between;">
-                <label style="font-size: 18px; margin-right: 10px" for="consider-gender" title="Sempre que possível fazer pares com géneros opostos">Géneros</label>
-                <div id="consider-gender-btn" style="margin-top: 3px; cursor: pointer;" class="checkbox_wrapper" title="Sempre que possível fazer pares com géneros opostos">
-                  <div class="custom-checkbox-ball"></div>
-                  <div class="custom-checkbox-back"></div>
-                </div>
+        <div class="side-menu-section">
+          <div class="side-menu-title">Setup</div>
+          <div>
+            <form id="admin-form">
+              <div>
+                <label style="padding-left: 5px; font-size: 16px;">Email</label>
+                <input type="email" placeholder="Email do Administrador" title="Email da pessoa que está a criar o Secret Santa" required>
+                <label style="padding-left: 5px; font-size: 16px;">Data do Evento</label>
+                <input type="date" title="Data do Secret Santa">
               </div>
-              <p style="font-size: 10px; color: #9f9f9f;">Sempre que possível fazer pares com géneros opostos</p>
-            </div>
-          </form>
+              <div>
+                <div style="display: flex; justify-content: space-between;">
+                  <label style="font-size: 18px; margin-top: auto; margin-bottom: auto;" title="Sempre que possível fazer pares com géneros opostos">Géneros</label>
+                  <div id="consider-gender-btn" style="margin-top: 3px; cursor: pointer;" class="checkbox_wrapper" title="Sempre que possível fazer pares com géneros opostos">
+                    <div class="custom-checkbox-ball"></div>
+                    <div class="custom-checkbox-back"></div>
+                  </div>
+                </div>
+                <p style="font-size: 10px; color: #9f9f9f;">Sempre que possível fazer pares com géneros opostos</p>
+                
+                <div style="display: flex; justify-content: space-between;">
+                  <label style="font-size: 18px; margin-top: auto; margin-bottom: auto;" title="Copiar link para este template do Secret Santa (membros não se mantém)">Copiar Link</label>
+                  <div id="copy-link-btn" style="cursor: pointer;" title="Copiar link para este template do Secret Santa (membros não se mantém)">
+                    <img style="width: 25px; filter: invert(1);" src="../static/images/copy.png" alt="copy">
+                  </div>
+                </div>
+                <p style="font-size: 10px; color: #9f9f9f;">Copiar link para este template do Secret Santa (membros não se mantém)</p>
+              </div>
+            </form>
+          </div>
         </div>
-        <div class="side-menu-title">Informação</div>
-        <div id="nmr-members">Participantes: 
-          <script>document.write(nmrMembers)</script>
+        <div class="side-menu-section">
+          <div class="side-menu-title">Informação</div>
+          <div id="nmr-members">Participantes: 
+            <script>document.write(nmrMembers)</script>
+          </div>
         </div>
       </div>
       <form id="members-form" action="verification" method="post">
