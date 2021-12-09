@@ -2,6 +2,10 @@ creds.py
 *~
 env/
 
+# ignore data files, except .touch
+data/*
+!data/.touch
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
