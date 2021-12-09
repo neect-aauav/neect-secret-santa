@@ -1,6 +1,7 @@
 let submitClicked = false;
 
 const updateMembersWidth = () => document.getElementById("members").style.width = parseInt(document.getElementById("members").children[0].offsetWidth)+parseInt(getComputedStyle(document.getElementById("members").children[0]).getPropertyValue('padding'))+"px";
+updateMembersWidth();
 
 const insertUrlParam = (key, value) => {
 	let searchParams = new URLSearchParams(window.location.search);
@@ -20,7 +21,16 @@ const updateNmrGenders = () => {
 	if (document.getElementById("nmr-females")) setTimeout(() => document.getElementById("nmr-females").innerText = `Femininos: ${Array.from(document.getElementsByTagName("select")).filter(select => select.value == "Feminino").length}`, 0);
 }
 
-updateMembersWidth();
+const updateSelectorsInputListener = () => {
+	// update gender number when clicking on gender selector
+	setTimeout(() => {
+		Array.from(document.getElementsByTagName("select")).
+			filter(select => select.name == "gender").
+			forEach(select => select.
+				addEventListener("input", () => updateNmrGenders()));
+	}, 1000);
+}
+updateSelectorsInputListener();
 
 const genderSelector = () => {
 	const selector = document.createElement("select");
@@ -202,6 +212,7 @@ document.getElementById("consider-gender-btn").addEventListener("click", e => {
 			section.appendChild(females);
 			females.id = "nmr-females";
 			updateNmrGenders();
+			updateSelectorsInputListener();
 		}
 	}
 	updateGender();
@@ -256,14 +267,6 @@ document.addEventListener("click", e => {
 		}));
 	}
 });
-
-// update gender number when clicking on gender selector
-setTimeout(() => {
-	Array.from(document.getElementsByTagName("select")).
-		filter(select => select.name == "gender").
-		forEach(select => select.
-			addEventListener("input", () => updateNmrGenders()));
-}, 1000);
 
 // swipe right event for mobile
 document.addEventListener('swiped-right', () => {
