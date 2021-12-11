@@ -15,6 +15,8 @@ const insertUrlParam = (key, value) => {
 }
 
 const updateNmrMembersElem = () => {
+	if (document.getElementsByClassName("delete-icon")) 
+		nmrMembers = document.getElementsByClassName("delete-icon").length;
 	document.getElementById("nmr-members").innerText = "Participantes: "+nmrMembers;
 	insertUrlParam("members", nmrMembers);
 }
@@ -120,10 +122,10 @@ document.getElementsByClassName("plus")[0].addEventListener("click", () => {
 	bin.alt = "Remove";
 
 	// enabled bins that are disabled
-	Array.from(document.getElementsByClassName("delete-icon"))
-		.filter(bin => bin.classList.contains("disabled"))
-		.forEach(bin => bin.classList.remove("disabled"));
-
+	const bins = document.getElementsByClassName("delete-icon");
+	if (bins.length > 2) Array.from(bins).forEach(bin => bin.classList.remove("disabled"));
+	else binWrapper.classList.add("disabled");
+	
 	updateMembersWidth();
 	updateNmrMembersElem();
 	updateNmrGenders();
@@ -242,10 +244,8 @@ document.addEventListener("click", e => {
 		target.closest(".member").remove();
 	
 		// if only two rows left, disable bins
-		if (nmrMembers <= 2)
-			Array.from(document.getElementsByClassName("delete-icon"))
-				.filter(bin => !bin.classList.contains("disabled"))
-				.forEach(bin => bin.classList.add("disabled"));
+		const bins = document.getElementsByClassName("delete-icon");
+		if (bins.length <= 2) Array.from(bins).forEach(bin => bin.classList.add("disabled"));
 
 		updateNmrMembersElem();
 		updateNmrGenders();

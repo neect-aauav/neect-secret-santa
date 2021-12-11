@@ -22,7 +22,10 @@ def index():
 	gender = ''
 	if request.method == 'GET':
 		print(request.args)
-		members = request.args.get('members') if request.args.get('members') and int(request.args.get('members')) > 2 else 2
+		if int(request.args.get('members')) < 2:
+			members = 2;
+		if int(request.args.get('members')) > 100:
+			members = 100;
 		title = request.args.get('title') if request.args.get('title') else ''
 		gender = request.args.get('gender') if request.args.get('gender') else ''
 	return render_template('index.html', members = members, title=title, gender=gender)
@@ -93,83 +96,88 @@ def verify():
 		emails = request.form.getlist("email")
 		genders = request.form.getlist("gender")
 
-		# prevent any repeated name or email
-		if (len(names) == len(set(names))) and (len(emails) == len(set(emails))):
-			genders = genders if genders else ['' for i in names]
+		# prevent too many or too little members
+		if len(names) >= 2 and len(names) <= 100:
+			# prevent any repeated name or email
+			if (len(names) == len(set(names))) and (len(emails) == len(set(emails))):
+				genders = genders if genders else ['' for i in names]
 
-			# [(name1, email1), (name2, email2), ...]
-			receivers = [(name, email, gender) for name, email, gender in zip(names, emails, genders)]
-			givers = receivers
-			pairs, males_rec, females_rec, males_giv, females_giv = {}, [], [], [], []
-			size = len(receivers)
+				# [(name1, email1), (name2, email2), ...]
+				receivers = [(name, email, gender) for name, email, gender in zip(names, emails, genders)]
+				givers = receivers
+				pairs, males_rec, females_rec, males_giv, females_giv = {}, [], [], [], []
+				size = len(receivers)
 
-			if genders[0] != '':
-				males_rec = [m for m in receivers if (m[2] == 'Masculino')]
-				females_rec = [m for m in receivers if (m[2] == 'Feminino')]
-				males_giv = males_rec
-				females_giv = females_rec
+				if genders[0] != '':
+					males_rec = [m for m in receivers if (m[2] == 'Masculino')]
+					females_rec = [m for m in receivers if (m[2] == 'Feminino')]
+					males_giv = males_rec
+					females_giv = females_rec
 
-			counter = 0
-			receiver, giver = "", ""
-			while len(givers) > 0:
-				# if gender pairing is possible
-				if (len(males_rec) > 0 and len(females_giv) > 0) or (len(females_rec) > 0 and len(males_giv) > 0):
-					receiver, giver = gendered_pairing((males_rec, females_giv) if len(males_rec) > 0 else (females_rec, males_giv), counter == size-1)
-				else:
-					receiver = random.sample(givers, 1)[0]
-					giver = random.sample([m for m in receivers if (m != receiver)], 1)[0]
+				counter = 0
+				receiver, giver = "", ""
+				while len(givers) > 0:
+					# if gender pairing is possible
+					if (len(males_rec) > 0 and len(females_giv) > 0) or (len(females_rec) > 0 and len(males_giv) > 0):
+						receiver, giver = gendered_pairing((males_rec, females_giv) if len(males_rec) > 0 else (females_rec, males_giv), counter == size-1)
+					else:
+						receiver = random.sample(givers, 1)[0]
+						giver = random.sample([m for m in receivers if (m != receiver)], 1)[0]
 
-				pair = [receiver, giver]
-				pairs[counter] = pair
+					pair = [receiver, giver]
+					pairs[counter] = pair
 
-				# remove already chosen giver
-				receivers = [m for m in receivers if (m != giver)]
-				# remove already paired receiver
-				givers = [m for m in givers if (m != receiver)]
+					# remove already chosen giver
+					receivers = [m for m in receivers if (m != giver)]
+					# remove already paired receiver
+					givers = [m for m in givers if (m != receiver)]
 
-				counter+=1
+					counter+=1
 
-			ss_title = request.form.get("ss-title")
-			ss_admin_email = request.form.get("admin-email")
-			ss_date = request.form.get("ss-date")
+				ss_title = request.form.get("ss-title")
+				ss_admin_email = request.form.get("admin-email")
+				ss_date = request.form.get("ss-date")
 
-			pairs["title"] = ss_title
-			if ss_date and ss_date != '':
-				pairs["date"] = ss_date
+				pairs["title"] = ss_title
+				if ss_date and ss_date != '':
+					pairs["date"] = ss_date
 
-			hash_val = md5((hash_salt+ss_admin_email+hash_salt_2).encode('utf-8'))
+				hash_val = md5((hash_salt+ss_admin_email+hash_salt_2).encode('utf-8'))
 
-			link = request.host_url+"verification?email="+ss_admin_email+"&hash="+hash_val.hexdigest()
+				link = request.host_url+"verification?email="+ss_admin_email+"&hash="+hash_val.hexdigest()
 
-			curpath = os.path.abspath(os.curdir)
-			print(curpath)
+				curpath = os.path.abspath(os.curdir)
+				print(curpath)
 
-			# save pairs to file
-			with open("data/"+hash_val.hexdigest()+".json", 'w') as f:
-				f.write(json.dumps(pairs, indent=2))
+				# save pairs to file
+				with open("data/"+hash_val.hexdigest()+".json", 'w') as f:
+					f.write(json.dumps(pairs, indent=2))
 
-			sender = EmailSender(smtp_server, port, sender_email, ss_admin_email, password)
-			sender.subject("Secret Santa - Verificação")
+				sender = EmailSender(smtp_server, port, sender_email, ss_admin_email, password)
+				sender.subject("Secret Santa - Verificação")
 
-			file = open('static/emails/email-verification.html', 'r')
-			soup = BeautifulSoup(file.read(), 'html.parser')
+				file = open('static/emails/email-verification.html', 'r')
+				soup = BeautifulSoup(file.read(), 'html.parser')
 
-			# change title
-			html_content = soup.find("div", {"id":"ss-title"})
-			html_content.find(text=re.compile('Title')).replace_with(ss_title)
-			# change link
-			html_content = soup.find("li", {"id":"link"})
-			html_content.find(text=re.compile('link')).replace_with(link)
+				# change title
+				html_content = soup.find("div", {"id":"ss-title"})
+				html_content.find(text=re.compile('Title')).replace_with(ss_title)
+				# change link
+				html_content = soup.find("li", {"id":"link"})
+				html_content.find(text=re.compile('link')).replace_with(link)
 
-			html = f"""\
-				{soup}
-			"""
-			sender.body(html=html)
-			sender.send()
+				html = f"""\
+					{soup}
+				"""
+				sender.body(html=html)
+				sender.send()
 
-			return render_template('verification.html', title=ss_title, email=ss_admin_email)
+				return render_template('verification.html', title=ss_title, email=ss_admin_email)
+			else:
+				return render_template("error.html", title="Problema na criação!", subtitle="Nome ou email de alguns membros duplicado.")
 		else:
-			return render_template("error.html", title="Problema na criação!", subtitle="Nome ou email de alguns membros duplicado.")
+			return render_template("error.html", title="Problema na criação!", subtitle="Número de membros tem de ser entre 2 e 100!")
+		
 
 def gendered_pairing(lists, before_last_iter):
 	receivers_list, givers_list = lists
