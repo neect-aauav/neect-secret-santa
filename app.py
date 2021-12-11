@@ -89,80 +89,88 @@ def verify():
 		else:
 			return render_template("error.html", title="Verificação falhada!", subtitle="O link parece estar errado")
 	else:
-		genders = request.form.getlist("gender") if request.form.getlist("gender") else ['' for i in request.form.getlist('name')]
+		names = request.form.getlist("name")
+		emails = request.form.getlist("email")
+		genders = request.form.getlist("gender")
 
-		# [(name1, email1), (name2, email2), ...]
-		receivers = [(name, email, gender) for name, email, gender in zip(request.form.getlist('name'), request.form.getlist('email'), genders)]
-		givers = receivers
-		pairs, males_rec, females_rec, males_giv, females_giv = {}, [], [], [], []
-		size = len(receivers)
+		# prevent any repeated name or email
+		if (len(names) == len(set(names))) and (len(emails) == len(set(emails))):
+			genders = genders if genders else ['' for i in names]
 
-		if genders[0] != '':
-			males_rec = [m for m in receivers if (m[2] == 'Masculino')]
-			females_rec = [m for m in receivers if (m[2] == 'Feminino')]
-			males_giv = males_rec
-			females_giv = females_rec
+			# [(name1, email1), (name2, email2), ...]
+			receivers = [(name, email, gender) for name, email, gender in zip(names, emails, genders)]
+			givers = receivers
+			pairs, males_rec, females_rec, males_giv, females_giv = {}, [], [], [], []
+			size = len(receivers)
 
-		counter = 0
-		receiver, giver = "", ""
-		while len(givers) > 0:
-			# if gender pairing is possible
-			if (len(males_rec) > 0 and len(females_giv) > 0) or (len(females_rec) > 0 and len(males_giv) > 0):
-				receiver, giver = gendered_pairing((males_rec, females_giv) if len(males_rec) > 0 else (females_rec, males_giv), counter == size-1)
-			else:
-				receiver = random.sample(givers, 1)[0]
-				giver = random.sample([m for m in receivers if (m != receiver)], 1)[0]
+			if genders[0] != '':
+				males_rec = [m for m in receivers if (m[2] == 'Masculino')]
+				females_rec = [m for m in receivers if (m[2] == 'Feminino')]
+				males_giv = males_rec
+				females_giv = females_rec
 
-			pair = [receiver, giver]
-			pairs[counter] = pair
+			counter = 0
+			receiver, giver = "", ""
+			while len(givers) > 0:
+				# if gender pairing is possible
+				if (len(males_rec) > 0 and len(females_giv) > 0) or (len(females_rec) > 0 and len(males_giv) > 0):
+					receiver, giver = gendered_pairing((males_rec, females_giv) if len(males_rec) > 0 else (females_rec, males_giv), counter == size-1)
+				else:
+					receiver = random.sample(givers, 1)[0]
+					giver = random.sample([m for m in receivers if (m != receiver)], 1)[0]
 
-			# remove already chosen giver
-			receivers = [m for m in receivers if (m != giver)]
-			# remove already paired receiver
-			givers = [m for m in givers if (m != receiver)]
+				pair = [receiver, giver]
+				pairs[counter] = pair
 
-			counter+=1
+				# remove already chosen giver
+				receivers = [m for m in receivers if (m != giver)]
+				# remove already paired receiver
+				givers = [m for m in givers if (m != receiver)]
 
-		ss_title = request.form.get("ss-title")
-		ss_admin_email = request.form.get("admin-email")
-		ss_date = request.form.get("ss-date")
+				counter+=1
 
-		pairs["title"] = ss_title
-		if ss_date and ss_date != '':
-			pairs["date"] = ss_date
+			ss_title = request.form.get("ss-title")
+			ss_admin_email = request.form.get("admin-email")
+			ss_date = request.form.get("ss-date")
 
-		hash_val = md5((hash_salt+ss_admin_email+hash_salt_2).encode('utf-8'))
+			pairs["title"] = ss_title
+			if ss_date and ss_date != '':
+				pairs["date"] = ss_date
 
-		link = request.host_url+"verification?email="+ss_admin_email+"&hash="+hash_val.hexdigest()
+			hash_val = md5((hash_salt+ss_admin_email+hash_salt_2).encode('utf-8'))
 
-		curpath = os.path.abspath(os.curdir)
-		print(curpath)
+			link = request.host_url+"verification?email="+ss_admin_email+"&hash="+hash_val.hexdigest()
 
-		# save pairs to file
-		with open("data/"+hash_val.hexdigest()+".json", 'w') as f:
-			f.write(json.dumps(pairs, indent=2))
+			curpath = os.path.abspath(os.curdir)
+			print(curpath)
 
-		sender = EmailSender(smtp_server, port, sender_email, ss_admin_email, password)
-		sender.subject("Secret Santa - Verificação")
+			# save pairs to file
+			with open("data/"+hash_val.hexdigest()+".json", 'w') as f:
+				f.write(json.dumps(pairs, indent=2))
 
-		file = open('static/emails/email-verification.html', 'r')
-		soup = BeautifulSoup(file.read(), 'html.parser')
+			sender = EmailSender(smtp_server, port, sender_email, ss_admin_email, password)
+			sender.subject("Secret Santa - Verificação")
 
-		# change title
-		html_content = soup.find("div", {"id":"ss-title"})
-		html_content.find(text=re.compile('Title')).replace_with(ss_title)
-		# change link
-		html_content = soup.find("li", {"id":"link"})
-		html_content.find(text=re.compile('link')).replace_with(link)
+			file = open('static/emails/email-verification.html', 'r')
+			soup = BeautifulSoup(file.read(), 'html.parser')
 
-		html = f"""\
-			{soup}
-		"""
-		sender.body(html=html)
-		sender.send()
+			# change title
+			html_content = soup.find("div", {"id":"ss-title"})
+			html_content.find(text=re.compile('Title')).replace_with(ss_title)
+			# change link
+			html_content = soup.find("li", {"id":"link"})
+			html_content.find(text=re.compile('link')).replace_with(link)
 
-		return render_template('verification.html', title=ss_title, email=ss_admin_email)
-		
+			html = f"""\
+				{soup}
+			"""
+			sender.body(html=html)
+			sender.send()
+
+			return render_template('verification.html', title=ss_title, email=ss_admin_email)
+		else:
+			return render_template("error.html", title="Problema na criação!", subtitle="Nome ou email de alguns membros duplicado.")
+
 def gendered_pairing(lists, before_last_iter):
 	receivers_list, givers_list = lists
 	# if before last iteration left
