@@ -1,4 +1,8 @@
-let submitClicked = false;
+let submitClicked;
+let repeated = {
+	"name": false,
+	"email": false
+}
 
 const updateMembersWidth = () => document.getElementById("members").style.width = parseInt(document.getElementById("members").children[0].offsetWidth)+parseInt(getComputedStyle(document.getElementById("members").children[0]).getPropertyValue('padding'))+"px";
 updateMembersWidth();
@@ -245,6 +249,8 @@ document.addEventListener("click", e => {
 
 		updateNmrMembersElem();
 		updateNmrGenders();
+
+		Object.keys(repeated).forEach(name => manageButtonEnableFromDuplicates(document.getElementById("submit-btn"), name));
 	}
 
 	if (!target.closest(".side-menu") && !target.closest(".hamburger-menu") && window.innerWidth < 720 && hamburgerWrapper.classList.contains("hamburger-menu-clicked")) {
@@ -256,25 +262,57 @@ document.addEventListener("click", e => {
 	}
 });
 
+const manageButtonEnableFromDuplicates = (button, inputName) => {
+	// check if submit button can be enabled again, if needed
+	if (button.disabled) {
+		const values = Array.from(document.getElementsByTagName("INPUT")).
+			filter(input => input.name === inputName).
+			map(input => input.value);
+
+		// if not repeated values, then reenable button
+		if (values.length === new Set(values).size) {
+			repeated[inputName] = false;
+
+			// check first if other input names don't have repetitions too
+			const temp = repeated;
+			delete temp[inputName];
+			if (Object.values(temp).every(repeat => !repeat)) {
+				button.disabled = false;
+				button.title = "Criar os Pares para o Secret Santa";
+			}
+		}
+	}	
+}
+
+const manageButtonFromDuplicates = (button, target, inputName) => {
+	for (let input of document.getElementsByTagName("INPUT")) {
+		if (input !== target && input.name === inputName) {
+			if (input.value === target.value) {
+				button.disabled = true;
+				button.title = "Nome ou email duplicado!"
+				repeated[inputName] = true;
+				break;
+			}
+		}
+	}
+	manageButtonEnableFromDuplicates(button, inputName);
+}
+
 document.addEventListener("input", e => {
 	const target = e.target;
 
 	// update gender number when clicking on gender selector
-	if (target.tagName == "SELECT" && target.name == "gender") {
+	if (target.tagName === "SELECT" && target.name === "gender") {
 		updateNmrGenders();
 	}
 
-	/*if (target.tagName == "INPUT" && target.name == "name") {
-		for (let input of document.getElementsByTagName("INPUT")) {
-			if (input.name == "name") {
-				if (input.value == target.value) {
-					document.getElementById("submit-btn").disabled = true;
-					break;
-				}
-				document.getElementById("submit-btn").disabled = false;
-			}
-		}
-	}*/
+	if (target.tagName === "INPUT" && target.name === "name") {
+		manageButtonFromDuplicates(document.getElementById("submit-btn"), target, "name");
+	}
+
+	if (target.tagName === "INPUT" && target.name === "email") {
+		manageButtonFromDuplicates(document.getElementById("submit-btn"), target, "email");
+	}
 });
 
 // swipe right event for mobile
