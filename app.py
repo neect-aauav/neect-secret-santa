@@ -17,18 +17,17 @@ app = Flask(__name__)
 # into a Flask view function
 @app.route('/')
 def index():
-	members = 2
-	title = ''
-	gender = ''
+	members, title, gender, date = 2, '', '', '' 
 	if request.method == 'GET':
-		print(request.args)
-		if int(request.args.get('members')) < 2:
-			members = 2;
-		if int(request.args.get('members')) > 100:
-			members = 100;
+		if request.args.get('members'):
+			if int(request.args.get('members')) < 2:
+				members = 2;
+			if int(request.args.get('members')) > 100:
+				members = 100;
 		title = request.args.get('title') if request.args.get('title') else ''
 		gender = request.args.get('gender') if request.args.get('gender') else ''
-	return render_template('index.html', members = members, title=title, gender=gender)
+		date = request.args.get('date') if request.args.get('date') else ''
+	return render_template('index.html', members = members, title=title, gender=gender, date=date)
 
 @app.route('/verification', methods=["POST", "GET"])
 def verify():
