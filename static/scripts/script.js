@@ -15,7 +15,7 @@ const insertUrlParam = (key, value) => {
 }
 
 const updateNmrMembersElem = () => {
-	if (document.getElementsByClassName("delete-icon")) 
+	if (document.getElementsByClassName("delete-icon"))
 		nmrMembers = document.getElementsByClassName("delete-icon").length;
 	document.getElementById("nmr-members").innerText = "Participantes: "+nmrMembers;
 	insertUrlParam("members", nmrMembers);
@@ -278,7 +278,7 @@ document.addEventListener("click", e => {
 		nmrMembers--;
 
 		target.closest(".member").remove();
-	
+
 		// if only two rows left, disable bins
 		const bins = document.getElementsByClassName("delete-icon");
 		if (bins.length <= 2) Array.from(bins).forEach(bin => bin.classList.add("disabled"));
@@ -290,7 +290,7 @@ document.addEventListener("click", e => {
 		Object.keys(repeated).forEach(name => manageButtonEnableFromDuplicates(document.getElementById("submit-btn"), name));
 	}
 
-	if (!target.closest(".side-menu") && !target.closest(".hamburger-menu") && window.innerWidth < 720 && hamburgerWrapper.classList.contains("hamburger-menu-clicked")) {
+	if (!target.closest(".side-menu") && !target.closest(".hamburger-menu") && window.innerWidth < 720 && hamburgerWrapper.classList.contains("hamburger-menu-clicked") && target.id !== "submit-btn") {
 		hamburgerWrapper.dispatchEvent(new MouseEvent("click", {
 			"view": window,
 			"bubbles": true,
@@ -318,7 +318,7 @@ const manageButtonEnableFromDuplicates = (button, inputName) => {
 				button.title = "Criar os Pares para o Secret Santa";
 			}
 		}
-	}	
+	}
 }
 
 const manageButtonFromDuplicates = (button, target, inputName) => {
@@ -404,12 +404,12 @@ window.addEventListener('resize', e => {
 
 window.onbeforeunload = e => {
 	for (const input of Array.from(document.getElementsByTagName("INPUT"))) {
-		if (input.value !== '' && !submitClicked) {	
+		if (input.value !== '' && !submitClicked) {
 			if (!e) e = window.event;
-			// e.cancelBubble is supported by IE 
+			// e.cancelBubble is supported by IE
 			e.cancelBubble = true;
 			e.returnValue = 'Deseja mesmo sair?';
-		
+
 			//e.stopPropagation works in Firefox.
 			if (e.stopPropagation) {
 				e.stopPropagation();
