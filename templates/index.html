@@ -36,9 +36,15 @@
           <div>
             <form id="admin-form">
               <div>
-                <label style="padding-left: 5px; font-size: 16px;">Email</label>
+                <div style="padding-bottom: 5px;" class="listing-row">
+                  <img src="../static/images/email-envelope.png" alt="email">
+                  <label style="font-size: 16px;">Email</label>
+                </div>
                 <input type="email" placeholder="Email do Administrador" title="Email da pessoa que está a criar o Secret Santa" required>
-                <label style="padding-left: 5px; font-size: 16px;">Data do Evento</label>
+                <div style="padding-bottom: 5px;" class="listing-row">
+                  <img src="../static/images/calendar.png" alt="calendar">
+                  <label style="font-size: 16px;">Data do Evento</label>
+                </div>
                 <input type="date" title="Data do Secret Santa">
               </div>
               <div>
@@ -65,8 +71,11 @@
         <div class="side-menu-section">
           <div class="side-menu-title">Informação</div>
           <div class="side-menu-listings">
-            <div id="nmr-members">Participantes: 
-              <script>document.write(nmrMembers)</script>
+            <div class="listing-row">
+              <img src="../static/images/user.png" alt="Participantes">
+              <div id="nmr-members">Participantes: 
+                <script>document.write(nmrMembers)</script>
+              </div>
             </div>
           </div>
         </div>

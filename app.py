@@ -19,11 +19,7 @@ app = Flask(__name__)
 def index():
 	members, title, gender, date = 2, '', '', '' 
 	if request.method == 'GET':
-		if request.args.get('members'):
-			if int(request.args.get('members')) < 2:
-				members = 2;
-			if int(request.args.get('members')) > 100:
-				members = 100;
+		members = request.args.get('members') if request.args.get('members') else 2
 		title = request.args.get('title') if request.args.get('title') else ''
 		gender = request.args.get('gender') if request.args.get('gender') else ''
 		date = request.args.get('date') if request.args.get('date') else ''

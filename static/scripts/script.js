@@ -189,8 +189,8 @@ document.getElementById("consider-gender-btn").addEventListener("click", e => {
 		e.target.classList.remove("checkbox-enabled");
 		gender = false;
 
-		if (document.getElementById("nmr-males")) document.getElementById("nmr-males").remove();
-		if (document.getElementById("nmr-females")) document.getElementById("nmr-females").remove();
+		if (document.getElementById("nmr-males")) document.getElementById("nmr-males").parentElement.remove();
+		if (document.getElementById("nmr-females")) document.getElementById("nmr-females").parentElement.remove();
 	}
 	// enable gender
 	else {
@@ -200,12 +200,27 @@ document.getElementById("consider-gender-btn").addEventListener("click", e => {
 		// get second side menu section
 		const section = document.getElementsByClassName("side-menu-section")[1].getElementsByClassName("side-menu-listings")[0];
 		if (section) {
-			const males = document.createElement("div");
-			section.appendChild(males);
-			males.id = "nmr-males";
-			const females = document.createElement("div");
-			section.appendChild(females);
-			females.id = "nmr-females";
+			[
+				{
+					id: "nmr-males",
+					img_src: "../static/images/male.png"
+				},
+				{
+					id: "nmr-females",
+					img_src: "../static/images/female.png"
+				}
+			].forEach(listing => {
+				const wrapper = document.createElement("div");
+				section.appendChild(wrapper);
+				wrapper.classList.add("listing-row");
+				const img = document.createElement("img");
+				wrapper.appendChild(img);
+				img.src = listing["img_src"];
+				img.alt = listing["id"];
+				const text = document.createElement("div");
+				wrapper.appendChild(text);
+				text.id = listing["id"];
+			});
 			updateNmrGenders();
 		}
 	}
