@@ -233,7 +233,7 @@ document.addEventListener("mouseover", e => {
 	const target = e.target;
 
 	if (target.closest(".member"))
-		target.closest(".member").style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-default');
+		target.closest(".member").style.backgroundColor = "#c0c0c0";
 
 	if (target.type === "submit" && !target.disabled)
 		target.style.transform = "scale(1.05)";
@@ -328,7 +328,20 @@ document.addEventListener("input", e => {
 	if (target.tagName === "INPUT" && target.name === "email") {
 		manageButtonFromDuplicates(document.getElementById("submit-btn"), target, "email");
 	}
+
+	if (target.id === "event-time") {
+		insertUrlParam("date", target.value);
+	}
 });
+
+// set min date for date input
+var today = new Date();
+var dd = today.getDate() < 10 ? '0'+today.getDate() : today.getDate();
+var mm = today.getMonth() + 1 < 10 ? '0'+(today.getMonth() + 1) : today.getMonth() + 1; // January is 0
+var yyyy = today.getFullYear();
+
+today = yyyy + '-' + mm + '-' + dd;
+document.getElementById("event-time").setAttribute("min", today);
 
 // swipe right event for mobile
 document.addEventListener('swiped-right', () => {

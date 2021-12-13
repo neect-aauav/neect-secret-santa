@@ -45,7 +45,8 @@
                   <img src="../static/images/calendar.png" alt="calendar">
                   <label style="font-size: 16px;">Data do Evento</label>
                 </div>
-                <input type="date" title="Data do Secret Santa">
+                <input id="event-time" type="date" title="Data do Secret Santa">
+                <script>document.getElementById("event-time").value = '{{date}}';</script>
               </div>
               <div>
                 <div style="display: flex; justify-content: space-between;">

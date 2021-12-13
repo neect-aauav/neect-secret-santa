@@ -8,6 +8,8 @@ import random
 import re
 import json
 import os
+from datetime import datetime
+from datetime import date
 
 # __name__ holds the name of the current Python module
 # Flask sets up some paths behind the scenes with this
@@ -17,13 +19,23 @@ app = Flask(__name__)
 # into a Flask view function
 @app.route('/')
 def index():
-	members, title, gender, date = 2, '', '', '' 
+	members, title, gender, event_date = 2, '', '', '' 
 	if request.method == 'GET':
 		members = request.args.get('members') if request.args.get('members') else 2
 		title = request.args.get('title') if request.args.get('title') else ''
 		gender = request.args.get('gender') if request.args.get('gender') else ''
-		date = request.args.get('date') if request.args.get('date') else ''
-	return render_template('index.html', members = members, title=title, gender=gender, date=date)
+		if request.args.get('date'):
+			event_date = request.args.get('date')
+			try:
+				# validate date format
+				datetime.strptime(event_date, '%Y-%m-%d')
+
+				yy,mm,dd = event_date.split("-")
+				if date.today() >= date(int(yy),int(mm),int(dd)):
+					event_date = date.today().strftime('%Y-%m-%d')
+			except ValueError:
+				event_date = ''
+	return render_template('index.html', members = members, title=title, gender=gender, date=event_date)
 
 @app.route('/verification', methods=["POST", "GET"])
 def verify():
