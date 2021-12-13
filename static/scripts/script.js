@@ -33,12 +33,12 @@ const updatePlusButton = () => {
 		if (nmrMembers < 100) {
 			btn.style.removeProperty("cursor");
 			btn.style.removeProperty("opacity");
-			btn.title = "Adicionar Novo Membro";
+			btn.children[0].title = "Adicionar Novo Membro";
 		}
 		else {
 			btn.style.cursor = "not-allowed";
 			btn.style.opacity = "0.3";
-			btn.title = "Atingido Limite Máximo de Membros";
+			btn.children[0].title = "Atingido Limite Máximo de Membros";
 		}
 	}
 }
