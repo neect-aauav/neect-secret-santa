@@ -27,6 +27,23 @@ const updateNmrGenders = () => {
 	if (document.getElementById("nmr-females")) setTimeout(() => document.getElementById("nmr-females").innerText = `Femininos: ${Array.from(document.getElementsByTagName("select")).filter(select => select.value == "Feminino").length}`, 0);
 }
 
+const updatePlusButton = () => {
+	const btn = document.getElementsByClassName("plus")[0];
+	if (btn) {
+		if (nmrMembers < 100) {
+			btn.style.removeProperty("cursor");
+			btn.style.removeProperty("opacity");
+			btn.placeholder = "Adicionar Novo Membro";
+		}
+		else {
+			btn.style.cursor = "not-allowed";
+			btn.style.opacity = "0.3";
+			btn.placeholder = "Atingido Limite Máximo de Membros";
+		}
+	}
+}
+updatePlusButton();
+
 const genderSelector = () => {
 	const selector = document.createElement("select");
 	selector.name = "gender";
@@ -82,56 +99,60 @@ if (window.innerWidth > 1215) {
 	}, 500);
 }
 
-document.getElementsByClassName("plus")[0].addEventListener("click", () => {
-	// add more members
-	nmrMembers++;
+document.getElementsByClassName("plus")[0].addEventListener("click", e => {
+	if (nmrMembers < 100) {
+		// add more members
+		nmrMembers++;
 
-	const wrapper = document.createElement("div");
-	document.getElementById("members").appendChild(wrapper);
-	wrapper.classList.add("member");
+		const wrapper = document.createElement("div");
+		document.getElementById("members").appendChild(wrapper);
+		wrapper.classList.add("member");
 
-	const avatar = document.createElement("img");
-	wrapper.appendChild(avatar);
-	avatar.src="../static/images/gift.png";
-	avatar.alt="user";
-	avatar.style.opacity="0.3";
+		const avatar = document.createElement("img");
+		wrapper.appendChild(avatar);
+		avatar.src="../static/images/gift.png";
+		avatar.alt="user";
+		avatar.style.opacity="0.3";
 
-	const name = document.createElement("input");
-	wrapper.appendChild(name);
-	name.type = "text";
-	name.placeholder = "Name";
-	name.name = "name";
-	name.required = true;
+		const name = document.createElement("input");
+		wrapper.appendChild(name);
+		name.type = "text";
+		name.placeholder = "Name";
+		name.name = "name";
+		name.required = true;
 
-	const email = document.createElement("input");
-	wrapper.appendChild(email);
-	email.type = "email";
-	email.placeholder = "Email";
-	email.name = "email";
-	email.required = true;
+		const email = document.createElement("input");
+		wrapper.appendChild(email);
+		email.type = "email";
+		email.placeholder = "Email";
+		email.name = "email";
+		email.required = true;
 
-	if (gender) wrapper.appendChild(genderSelector());
+		if (gender) wrapper.appendChild(genderSelector());
 
-	const binWrapper = document.createElement("div");
-	wrapper.appendChild(binWrapper);
-	binWrapper.classList.add("delete-icon");
-	const bin = document.createElement("img");
-	binWrapper.appendChild(bin);
-	bin.src = "../static/images/trash.png";
-	bin.title = "Remove Member";
-	bin.alt = "Remove";
+		const binWrapper = document.createElement("div");
+		wrapper.appendChild(binWrapper);
+		binWrapper.classList.add("delete-icon");
+		const bin = document.createElement("img");
+		binWrapper.appendChild(bin);
+		bin.src = "../static/images/trash.png";
+		bin.title = "Remove Member";
+		bin.alt = "Remove";
 
-	// enabled bins that are disabled
-	const bins = document.getElementsByClassName("delete-icon");
-	if (bins.length > 2) Array.from(bins).forEach(bin => bin.classList.remove("disabled"));
-	else binWrapper.classList.add("disabled");
-	
-	updateMembersWidth();
-	updateNmrMembersElem();
-	updateNmrGenders();
+		// enabled bins that are disabled
+		const bins = document.getElementsByClassName("delete-icon");
+		if (bins.length > 2) Array.from(bins).forEach(bin => bin.classList.remove("disabled"));
+		else binWrapper.classList.add("disabled");
 
-	const members = document.getElementById("members");
-	members.scroll(0, members.offsetHeight);
+		updateMembersWidth();
+		updateNmrMembersElem();
+		updateNmrGenders();
+
+		const members = document.getElementById("members");
+		members.scroll(0, members.offsetHeight);
+	}
+
+	updatePlusButton();
 });
 
 document.getElementById("submit-btn").addEventListener("click", () => {
@@ -264,6 +285,7 @@ document.addEventListener("click", e => {
 
 		updateNmrMembersElem();
 		updateNmrGenders();
+		updatePlusButton();
 
 		Object.keys(repeated).forEach(name => manageButtonEnableFromDuplicates(document.getElementById("submit-btn"), name));
 	}
