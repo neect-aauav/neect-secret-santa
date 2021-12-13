@@ -73,6 +73,8 @@ const updateGender = () => {
 
 document.getElementsByClassName("side-menu")[0].style.height = (document.documentElement.scrollHeight-document.getElementsByClassName("top")[0].offsetHeight)+"px";
 
+document.getElementById("members").style.height = (window.innerHeight - 375) + "px";
+
 const hamburgerWrapper = document.getElementsByClassName("hamburger-menu")[0];
 hamburgerWrapper.addEventListener("click", () => {
 	const sideMenu = document.getElementsByClassName("side-menu")[0];
@@ -149,7 +151,7 @@ document.getElementsByClassName("plus")[0].addEventListener("click", e => {
 		updateNmrGenders();
 
 		const members = document.getElementById("members");
-		members.scroll(0, members.offsetHeight);
+		members.scroll(0, members.scrollHeight);
 	}
 
 	updatePlusButton();

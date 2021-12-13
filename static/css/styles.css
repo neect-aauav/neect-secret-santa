@@ -102,7 +102,7 @@ img:hover {
 }
 
 .top {
-	background: linear-gradient( 
+	background: linear-gradient(
 		-90deg, rgba(0,255,183,1) 0%, rgba(0,73,111,1) 100%);
     width: 100%;
     height: 100px;
@@ -273,7 +273,7 @@ img:hover {
 	.member * {
 		font-size: 14px !important;
 	}
-	
+
 	#members>div>img[alt="user"] {
 		margin: auto !important;
 		padding-bottom: 10px;
@@ -307,4 +307,11 @@ img:hover {
 	#admin-form input {
 		width: 178px;
 	}
-  }
+}
+
+
+@media only screen and (min-width: 720px) {
+	#members {
+		padding: 0 15px;
+	}
+}
