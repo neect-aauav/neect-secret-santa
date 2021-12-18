@@ -2,6 +2,7 @@ body {
 	margin: 0;
 	padding: 0;
 	font-family: Arial;
+	overflow: hidden;
 }
 
 body * {
@@ -75,7 +76,7 @@ button[type=submit] {
 	border-radius: 40px;
 	border: 0;
 	color: white;
-	background: linear-gradient(-90deg, rgba(0,255,183,1) 0%, rgba(0,73,111,1) 100%);
+	background: linear-gradient(-90deg, rgba(255,73,73,1) 0%, rgba(0,73,111,1) 100%);
     font-weight: bold;
 }
 
@@ -103,7 +104,7 @@ img:hover {
 
 .top {
 	background: linear-gradient(
-		-90deg, rgba(0,255,183,1) 0%, rgba(0,73,111,1) 100%);
+		-90deg, rgba(255,73,73,1) 0%, rgba(0,73,111,1) 100%);
     width: 100%;
     height: 100px;
     position: relative;
@@ -256,11 +257,15 @@ img:hover {
 	filter: invert(36%) sepia(46%) saturate(348%) hue-rotate(106deg) brightness(91%) contrast(90%);
 }
 
-.hex-62bb9a, .hex-62bb9a * {
+.hex-ff4949 {
+    filter: invert(50%) sepia(58%) saturate(5088%) hue-rotate(332deg) brightness(105%) contrast(113%);
+}
+
+.hex-62bb9a, .hex-62bb9a *, .hex-ff4949, .hex-ff4949 * {
 	opacity: 1 !important;
 }
 
-@media only screen and (max-width: 720px) {
+@media only screen and (max-width: 815px) {
 	#members {
 		width: auto !important;
 		height: 300px;
@@ -310,7 +315,7 @@ img:hover {
 }
 
 
-@media only screen and (min-width: 720px) {
+@media only screen and (min-width: 815px) {
 	#members {
 		padding: 0 15px;
 	}

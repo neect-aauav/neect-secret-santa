@@ -29,11 +29,11 @@
 }
 
 .checkbox-enabled > .custom-checkbox-back {
-	background-color: #62bb9a;
+	background-color: #405172;
 }
 
 .checkbox-enabled > .custom-checkbox-ball {
     margin-left: 16px;
     background: linear-gradient(
-        90deg, rgba(0,255,183,1) 0%, rgba(0,73,111,1) 100%);
+        -90deg, rgba(255,73,73,1) 0%, rgba(0,73,111,1) 100%);
 }

@@ -71,7 +71,10 @@ const updateGender = () => {
 	updateMembersWidth();
 }
 
-document.getElementsByClassName("side-menu")[0].style.height = (document.documentElement.scrollHeight-document.getElementsByClassName("top")[0].offsetHeight)+"px";
+document.getElementsByClassName("side-menu")[0].style.height = (document.documentElement.clientHeight-document.getElementsByClassName("top")[0].offsetHeight)+"px";
+
+Array.from(document.getElementsByClassName("side-menu")[0].getElementsByTagName("INPUT")).
+    forEach(input => input.style.width=(document.getElementsByClassName("side-menu")[0].offsetWidth-50)+"px");
 
 document.getElementById("members").style.height = (window.innerHeight - 375) + "px";
 
@@ -176,11 +179,11 @@ document.getElementById("copy-link-btn").addEventListener("click", e => {
 	if (window.navigator.clipboard) {
 		window.navigator.clipboard.writeText(window.location.href).
 			then(() => {
-				target.classList.add("hex-62bb9a");
+				target.classList.add("hex-ff4949");
 				target.style.transition = "0.5s";
 				target.style.transform = "scale(1.4)";
 				setTimeout(() => {
-					target.classList.remove("hex-62bb9a");
+					target.classList.remove("hex-ff4949");
 					target.style.removeProperty("transition");
 					target.style.removeProperty("transform");
 				}, 1000);
@@ -195,7 +198,7 @@ document.getElementById("admin-form").getElementsByTagName("input")[0].addEventL
 document.getElementById("admin-form").getElementsByTagName("input")[1].addEventListener("input", e => document.getElementById("ss-date").value = e.target.value);
 
 if (gender) {
-	let time = window.innerWidth > 720 ? 700 : 0;
+	let time = window.innerWidth > 815 ? 700 : 0;
 	setTimeout(() => {
 		document.getElementById("consider-gender-btn").dispatchEvent(new MouseEvent("click", {
 			"view": window,
